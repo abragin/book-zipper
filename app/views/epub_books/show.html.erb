@@ -1,0 +1,16 @@
+<h1>Epub book</h1>
+<p><%= link_to "Books", epub_books_path %>/<%= @epub_book.title %>
+<%= link_to "Edit parsing options", edit_epub_book_path(@epub_book) %>
+<%= link_to "Destroy", epub_book_path(@epub_book),
+            method: :delete,
+            data: { confirm: "Are you sure?" } %>
+</p>
+
+<ul>
+  <% @epub_book.epub_items.each do |epub_item| %>
+    <li>
+      <%= link_to epub_item.name, epub_book_epub_item_path(@epub_book, epub_item) %>
+      (<%= '...' + epub_item.content[350..550] + '...' %>)
+    </li>
+  <% end %>
+</ul>

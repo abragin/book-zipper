@@ -1,0 +1,16 @@
+<h1> New Epub book </h1>
+
+<%= form_with model: @epub_book do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :file %><br>
+    <%= form.file_field :file %>
+  </div>
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

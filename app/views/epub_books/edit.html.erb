@@ -1,0 +1,29 @@
+<h1> Edit Epub book parsing options</h1>
+
+<%= form_with model: @epub_book do |form| %>
+  <div>
+    <%= form.label :title_parsing %><br>
+    <%= form.text_field :title_parsing %>
+  </div>
+
+  <div>
+    <%= form.label :content_parsing %><br>
+    <%= form.text_field :content_parsing %>
+  </div>
+  <div>
+    <%= form.label :excluded_content %><br>
+    <%= form.text_field :excluded_content %>
+  </div>
+  <div>
+    <%= form.label :start_position %><br>
+    <%= form.number_field :start_position %>
+  </div>
+  <div>
+    <%= form.label :end_position %><br>
+    <%= form.number_field :end_position %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
