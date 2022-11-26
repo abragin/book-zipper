@@ -3,9 +3,9 @@
 one:
   position: 1
   content: MyText
-  chapter: 
+  chapter: one
 
 two:
-  position: 1
+  position: 2
   content: MyText
-  chapter: 
+  chapter: one

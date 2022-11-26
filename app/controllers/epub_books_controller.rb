@@ -43,9 +43,9 @@ class EpubBooksController < ApplicationController
   private
 
   def book_params
-    params.require(:epub_book).permit(:file, :title, :title_parsing,
-                                      :content_parsing, :excluded_content,
-                                      :start_position, :end_position
-                                     )
+    params.require(:epub_book).permit(
+      :file, :title, :content_location, :title_tags_text, :content_tag,
+      :excluded_content, :start_position, :end_position
+     )
   end
 end

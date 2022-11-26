@@ -26,9 +26,10 @@ ActiveRecord::Schema.define(version: 2022_11_23_153632) do
     t.string "filename"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "title_parsing"
-    t.string "content_parsing"
-    t.string "excluded_content"
+    t.string "content_location"
+    t.string "title_tags"
+    t.string "content_tag"
+    t.string "excluded_content_tag"
     t.integer "start_position"
     t.integer "end_position"
   end

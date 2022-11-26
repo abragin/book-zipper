@@ -3,9 +3,9 @@
 one:
   title: MyString
   position: 1
-  epub_book: 
+  epub_book: testepubbook
 
 two:
   title: MyString
   position: 1
-  epub_book: 
+  epub_book: testepubbook

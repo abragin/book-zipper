@@ -2,10 +2,20 @@
 
 one:
   position: 1
-  content: MyText
-  epub_book: one
+  content: "<html><body><div><h1>Book 1</h1><h2>Part 1</h2><h3>Chapter 1</h3><p>First paragraph</p>\n<p>Second Paragraph</p></div></body></html>"
+  epub_book: testepubbook
 
 two:
-  position: 1
-  content: MyText
-  epub_book: two
+  position: 2
+  content: "<html><body><div>><h2>Part 2</h2><p>Third <a>this should be removed </a> paragraph</p>\n</div></body></html>"
+  epub_book: testepubbook
+
+three:
+  position: 3
+  content: "<html><body><div>><h3>Chapter 1</h3><p>Forth paragraph</p>\n<p>Fifth paragraph</p></div></body></html>"
+  epub_book: testepubbook
+
+four:
+  position: 4
+  content: "<html><body><div>><p>Sixth paragraph</p>\n<h3>Chapter 2</h3><p>Seventh paragraph</p></div></body></html>"
+  epub_book: testepubbook

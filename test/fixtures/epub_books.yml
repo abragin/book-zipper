@@ -1,8 +1,14 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  title: MyString
-  filename: MyString
+testepubbook:
+  title: "Testbook title"
+  filename: 'testbook.epub'
+  content_location: 'div'
+  title_tags: ['h1','h2','h3']
+  content_tag: 'p'
+  excluded_content_tag: 'a'
+  start_position: 0
+  end_position: 4
 
 two:
   title: MyString
