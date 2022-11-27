@@ -40,12 +40,18 @@ class EpubBooksController < ApplicationController
     redirect_to epub_books_path
   end
 
+  def create_chapters
+    @epub_book = EpubBook.find(params[:id])
+    @epub_book.store_structured
+    redirect_to epub_book_chapters_path(@epub_book)
+  end
+
   private
 
   def book_params
     params.require(:epub_book).permit(
       :file, :title, :content_location, :title_tags_text, :content_tag,
-      :excluded_content, :start_position, :end_position
+      :excluded_content_tag, :start_position, :end_position
      )
   end
 end

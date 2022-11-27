@@ -23,7 +23,7 @@ class EpubBook < ApplicationRecord
   end
 
   def title_tags_text=(v)
-    title_tags = v.split(';')
+    self.title_tags = v.split(';')
   end
 
   def title_tags_text

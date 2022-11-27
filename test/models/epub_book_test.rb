@@ -31,4 +31,11 @@ class EpubBookTest < ActiveSupport::TestCase
     assert_equal ["Seventh paragraph"],
       book.chapters[3].paragraphs.map{|p| p.content}
   end
+  test "#store_structured with do content_tag and excluded_content_tag" do
+    book = epub_books(:nodivandabook)
+    book.store_structured
+    assert_equal 1, book.chapters.length
+    assert_equal 'Chapter 1', book.chapters[0].title
+    assert_equal 'First paragraph', book.chapters[0].paragraphs[0].content
+  end
 end

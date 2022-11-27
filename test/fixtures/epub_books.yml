@@ -10,6 +10,12 @@ testepubbook:
   start_position: 0
   end_position: 4
 
-two:
-  title: MyString
-  filename: MyString
+nodivandabook:
+  title: "Second testbook"
+  filename: 'test.epub'
+  content_location: ''
+  title_tags: ['h3']
+  content_tag: 'p'
+  excluded_content_tag: ''
+  start_position: 0
+  end_position: 0

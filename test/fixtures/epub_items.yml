@@ -19,3 +19,8 @@ four:
   position: 4
   content: "<html><body><div>><p>Sixth paragraph</p>\n<h3>Chapter 2</h3><p>Seventh paragraph</p></div></body></html>"
   epub_book: testepubbook
+
+five:
+  position: 0
+  content: "<html><body><h3>Chapter 1</h3><p>First paragraph</p></body></html>"
+  epub_book: nodivandabook

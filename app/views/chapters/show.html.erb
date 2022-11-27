@@ -1,0 +1,6 @@
+<h2> Chapter </h2>
+<p><%= link_to @chapter.epub_book.title, epub_book_chapters_path(@epub_book) %>/
+<%= @chapter.title %>
+<% @chapter.paragraphs.each do |paragraph| %>
+  <p> <%= paragraph.content %> </p>
+<% end %>
