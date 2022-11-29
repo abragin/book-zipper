@@ -4,7 +4,8 @@
   <% @chapters.each do |chapter| %>
     <li>
       <%= link_to chapter.title, epub_book_chapter_path(@epub_book, chapter) %>
-      (<%= chapter.paragraphs[0].content[..100] + '...' %>)
+      <%= chapter.paragraphs[0].content[..100] + '...' %>
+      (<%= chapter.paragraphs.length %> paragraphs)
     </li>
   <% end %>
 </ul>

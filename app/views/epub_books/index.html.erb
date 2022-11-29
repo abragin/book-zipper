@@ -10,6 +10,7 @@
       <%= link_to "Destroy", epub_book_path(epub_book),
                   method: :delete,
                   data: { confirm: "Are you sure?" } %>
+      <%= epub_book.chapters.count %> chapters
     </li>
   <% end %>
 </ul>

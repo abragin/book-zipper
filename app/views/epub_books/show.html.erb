@@ -1,7 +1,8 @@
 <h1>Epub book</h1>
 <p><%= link_to "Books", epub_books_path %>/<%= @epub_book.title %>
 <%= link_to "Edit parsing options", edit_epub_book_path(@epub_book) %>
-<%= link_to "Chapters", epub_book_chapters_path(@epub_book) %>
+<%= link_to ("Chapters (" + @epub_book.chapters.count.to_s + ")"),
+  epub_book_chapters_path(@epub_book) %>
 <%= link_to "Destroy", epub_book_path(@epub_book),
             method: :delete,
             data: { confirm: "Are you sure?" } %>
