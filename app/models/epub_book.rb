@@ -4,6 +4,7 @@ class EpubBook < ApplicationRecord
   has_many :epub_items,
     -> { order('position') },
     dependent: :destroy
+  has_many :book_zips, dependent: :destroy
   has_many :chapters,
     -> { order('position') },
     dependent: :destroy

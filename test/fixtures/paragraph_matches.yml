@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  chapter_zip: 
+  position: 1
+  source_start_position: 1
+  source_end_position: 1
+  target_start_position: 1
+  target_end_position: 1
+
+two:
+  chapter_zip: 
+  position: 1
+  source_start_position: 1
+  source_end_position: 1
+  target_start_position: 1
+  target_end_position: 1

@@ -1,11 +1,26 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+nine_sentence_paragraph:
   position: 1
-  content: MyText
+  content: <%= "nine sentence paragraph. " * 9 %>
   chapter: one
 
-two:
+ten_sentence_paragraph:
+  position: 1
+  content: <%= "ten sentence paragraph. " * 10 %>
+  chapter: two
+
+one_sentence_paragraph:
   position: 2
-  content: MyText
+  content: <%= "one sentence paragraph." %>
+  chapter: one
+
+another_one_sentence_paragraph:
+  position: 2
+  content: <%= "one sentence paragraph." %>
+  chapter: two
+
+one_sentence_paragraph_again:
+  position: 3
+  content: <%= "one sentence paragraph." %>
   chapter: one

@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
+  title: chapter_one
   position: 1
   epub_book: testepubbook
 
 two:
-  title: MyString
-  position: 1
+  title: chapter_two
+  position: 2
   epub_book: testepubbook

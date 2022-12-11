@@ -3,6 +3,10 @@ Rails.application.routes.draw do
   #get "/epub_books", to: "epub_books#index"
   root "epub_books#index"
 
+  resources :book_zips, only: [:new, :create, :show] do
+    resources :chapter_zips, only: [:new, :create]
+  end
+
   resources :epub_books do
     resources :epub_items, only: [:show]
     resources :chapters, only: [:index, :show]
