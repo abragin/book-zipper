@@ -6,7 +6,7 @@ class ChapterZip < ApplicationRecord
   belongs_to :source_chapter, class_name: "Chapter"
   belongs_to :target_chapter, class_name: "Chapter"
   before_create :set_title, :set_end_positions
-  before_save :process_zip_info, if: Proc.new { |cz| cz.zip_info.present? }
+  before_validation :process_zip_info, if: Proc.new { |cz| cz.zip_info.present? }
   before_save :build_paragraph_matches
   serialize :zip_info, JSON
 
@@ -28,8 +28,14 @@ class ChapterZip < ApplicationRecord
 
   def process_zip_info
     #turn string ids into int ids if necessary
-    bindig.pry
-    self.zip_info = zip_info.map{|k,v| [k, v.map(&:to_i)] }.to_h
+    self.zip_info ||= {}
+    for p in ['source', 'target']
+      zip_info[p] ||= {}
+      for l in ['ignore_ids', 'attach_ids']
+        zip_info[p][l] ||= []
+        zip_info[p][l] = zip_info[p][l].map(&:to_i)
+      end
+    end
   end
 
   def ok_to_match(source_ps, target_ps)
@@ -86,35 +92,6 @@ class ChapterZip < ApplicationRecord
       end
     end
     res
-    #res_ = [last_target_pos]
-    #loc_source[1..].each do |loc|
-      #if target_source_diff == 0
-        #last_target_pos += 1
-        #res_.append(last_target_pos)
-      #elsif (last_target_pos == loc_target.length - 1)
-        #res_.append(last_target_pos)
-        #target_source_diff -= 1
-      #else
-        #dist_to_t0 = (loc - loc_target[last_target_pos]).abs
-        #dist_to_t1 = (loc - loc_target[last_target_pos+1]).abs
-        #if dist_to_t0 < dist_to_t1
-          #res_.append(last_target_pos)
-          #target_source_diff -= 1
-        #else
-          #last_target_pos += 1
-          #res_.append(last_target_pos)
-        #end
-      #end
-    #end
-    #res = []
-    #res_.each_with_index do |r, i|
-      #if res[r]
-        #res[r].append(i)
-      #else
-        #res.append([i])
-      #end
-    #end
-    #res
   end
 
   def source_ps
@@ -122,7 +99,7 @@ class ChapterZip < ApplicationRecord
       @source_ps = source_chapter.paragraphs.where(
         "position >= ?", start_position_source)
       if end_position_source
-        @source_ps = res.where("position <= ?", end_position_source)
+        @source_ps = @source_ps.where("position <= ?", end_position_source)
       end
       @source_ps = @source_ps.to_a
     end
@@ -134,7 +111,7 @@ class ChapterZip < ApplicationRecord
       @target_ps = target_chapter.paragraphs.where(
         "position >= ?", start_position_target)
       if end_position_target
-        @target_ps = res.where("position <= ?", end_position_target)
+        @target_ps = @target_ps.where("position <= ?", end_position_target)
       end
       @target_ps = @target_ps.to_a
     end

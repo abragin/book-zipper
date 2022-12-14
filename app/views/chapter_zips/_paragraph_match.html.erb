@@ -5,10 +5,10 @@
       <tr>
       <td>
         Position: <%= p.position %><br/>
-        Ignore: <%= check_box_tag 'zip_info[ignore_source_ids][]', p.id,
-          (zip_info[:ignore_source_ids].includes?(p.id)) -%><br/>
-        Merge with prev: <%= check_box_tag 'zip_info[attach_source_ids][]', p.id,
-          (zip_info[:ignore_source_ids].includes?(p.id)) -%>
+        Ignore: <%= check_box_tag 'chapter_zip[zip_info][source][ignore_ids][]', p.id,
+          (zip_info['source']['ignore_ids'].include?(p.id)) -%><br/>
+        Merge with prev: <%= check_box_tag 'chapter_zip[zip_info][source][attach_ids][]', p.id,
+          (zip_info['source']['attach_ids'].include?(p.id)) -%>
       </td>
       <td><%= p.content %></td>
       </tr>
@@ -22,10 +22,10 @@
       <tr>
       <td>
         Position: <%= p.position %><br/>
-        Ignore: <%= check_box_tag 'zip_info[ignore_target_ids][]', p.id,
-          (zip_info[:ignore_target_ids].includes?(p.id)) -%><br/>
-        Merge with prev: <%= check_box_tag 'zip_info[attach_target_ids][]', p.id,
-          (zip_info[:ignore_target_ids].includes?(p.id)) -%>
+        Ignore: <%= check_box_tag 'chapter_zip[zip_info][target][ignore_ids][]', p.id,
+          (zip_info['target']['ignore_ids'].include?(p.id)) -%><br/>
+        Merge with prev: <%= check_box_tag 'chapter_zip[zip_info][target][attach_ids][]', p.id,
+          (zip_info['target']['attach_ids'].include?(p.id)) -%>
       </td>
       <td><%= p.content %></td>
       </tr>
