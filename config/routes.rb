@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   root "epub_books#index"
 
   resources :book_zips, only: [:new, :create, :show] do
-    resources :chapter_zips, only: [:new, :create]
+    resources :chapter_zips, only: [:new, :create, :edit, :update, :destroy]
   end
 
   resources :epub_books do

@@ -6,10 +6,16 @@
 
 <p> Chapter zips:
 <ul>
-  <% @book_zip.chapter_zips. each do |chapter_zip| %>
-    <li> <%= link_to chapter_zip.source_chapter.title,
+  <% @book_zip.chapter_zips.each do |chapter_zip| %>
+    <li>
+      <%= chapter_zip.position %>.
+      <%= link_to chapter_zip.source_chapter.title,
       epub_book_chapter_path(chapter_zip.source_chapter.epub_book, chapter_zip.source_chapter) %> -        <%= link_to chapter_zip.target_chapter.title,
       epub_book_chapter_path(chapter_zip.target_chapter.epub_book, chapter_zip.target_chapter) %>
+      <%= link_to '(Edit)', edit_book_zip_chapter_zip_path(@book_zip, chapter_zip) %>
+      <%= link_to "Destroy", book_zip_chapter_zip_path(@book_zip, chapter_zip),
+                  method: :delete,
+                  data: { confirm: "Are you sure?" } %>
     </li>
   <% end %>
 </ul>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_11_092933) do
+ActiveRecord::Schema.define(version: 2022_12_13_085905) do
 
   create_table "book_zips", force: :cascade do |t|
     t.integer "ebook_source_id"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 2022_12_11_092933) do
     t.integer "end_position_source"
     t.integer "start_position_target", default: 0
     t.integer "end_position_target"
+    t.text "zip_info"
     t.index ["book_zip_id"], name: "index_chapter_zips_on_book_zip_id"
     t.index ["source_chapter_id"], name: "index_chapter_zips_on_source_chapter_id"
     t.index ["target_chapter_id"], name: "index_chapter_zips_on_target_chapter_id"

@@ -14,6 +14,22 @@ class ChapterZipsController < ApplicationController
     end
   end
 
+  def edit
+    @chapter_zip = ChapterZip.find(params[:id])
+  end
+
+  def update
+    binding.pry
+    print 1
+  end
+
+  def destroy
+    @chapter_zip = ChapterZip.find(params[:id])
+    @chapter_zip.destroy
+
+    redirect_to @chapter_zip.book_zip
+  end
+
   private
 
   def chapter_zip_params

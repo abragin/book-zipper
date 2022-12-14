@@ -1,0 +1,35 @@
+<tr>
+  <td>
+    <table>
+    <% paragraph_match.paragraphs_source.each do |p| %>
+      <tr>
+      <td>
+        Position: <%= p.position %><br/>
+        Ignore: <%= check_box_tag 'zip_info[ignore_source_ids][]', p.id,
+          (zip_info[:ignore_source_ids].includes?(p.id)) -%><br/>
+        Merge with prev: <%= check_box_tag 'zip_info[attach_source_ids][]', p.id,
+          (zip_info[:ignore_source_ids].includes?(p.id)) -%>
+      </td>
+      <td><%= p.content %></td>
+      </tr>
+    <% end %>
+    </table>
+
+  </td>
+  <td>
+    <table>
+    <% paragraph_match.paragraphs_target.each do |p| %>
+      <tr>
+      <td>
+        Position: <%= p.position %><br/>
+        Ignore: <%= check_box_tag 'zip_info[ignore_target_ids][]', p.id,
+          (zip_info[:ignore_target_ids].includes?(p.id)) -%><br/>
+        Merge with prev: <%= check_box_tag 'zip_info[attach_target_ids][]', p.id,
+          (zip_info[:ignore_target_ids].includes?(p.id)) -%>
+      </td>
+      <td><%= p.content %></td>
+      </tr>
+    <% end %>
+    </table>
+  </td>
+</tr>

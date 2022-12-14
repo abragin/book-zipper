@@ -1,15 +1,6 @@
-<h1> New chapter zip </h1>
+<h1> Edit chapter zip </h1>
 
 <%= form_with model: [@chapter_zip.book_zip, @chapter_zip] do |form| %>
-  <div>
-    <%= form.label :source_chapter %><br>
-    <%= form.collection_select :source_chapter_id, @chapter_zip.book_zip.ebook_source.chapters, :id, :title %>
-  </div>
-
-  <div>
-    <%= form.label :target_chapter %><br>
-    <%= form.collection_select :target_chapter_id, @chapter_zip.book_zip.ebook_target.chapters, :id, :title  %>
-  </div>
   <div>
     <%= form.label :start_position_source %><br>
     <%= form.number_field :start_position_source %>
@@ -30,9 +21,18 @@
     <%= form.label :position %><br>
     <%= form.number_field :position %>
   </div>
-  <div>
-    <%= form.hidden_field :book_zip_id %>
-  </div>
+  <table border=1>
+    <tr>
+      <th> Source </th>
+      <th> Target </th>
+    </tr>
+  <%= render partial: "paragraph_match",
+    collection: @chapter_zip.paragraph_matches, locals: {form: form,
+                                                         zip_info: @zip_info}
+  %>
+  </table>
+
+
   <div>
     <%= form.submit %>
   </div>
