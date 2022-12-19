@@ -1,5 +1,7 @@
 <h1>Epub books</h1>
-<p> <%= link_to "New book", new_epub_book_path %> </p>
+<p> <%= link_to "New book", new_epub_book_path %>
+ <%= link_to "Book zips", book_zips_path %>
+</p>
 
 <ul>
   <% @epub_books.each do |epub_book| %>

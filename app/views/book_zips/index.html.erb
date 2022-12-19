@@ -1,0 +1,10 @@
+<h1>Book zips</h1>
+<p> <%= link_to "New book zip", new_book_zip_path %> </p>
+
+<ul>
+  <% @book_zips.each do |book_zip| %>
+    <li>
+      <%= link_to book_zip.title, book_zip_path(book_zip) %>
+    </li>
+  <% end %>
+</ul>

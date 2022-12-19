@@ -1,4 +1,9 @@
 class BookZipsController < ApplicationController
+
+  def index
+    @book_zips = BookZip.all
+  end
+
   def new
     @book_zip = BookZip.new
   end

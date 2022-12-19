@@ -6,4 +6,8 @@ class BookZip < ApplicationRecord
   has_many :chapter_zips,
     -> { order('position') },
      dependent: :destroy
+
+  def title
+    ebook_source.title + ' - ' + ebook_target.title
+  end
 end
