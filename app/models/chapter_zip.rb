@@ -12,8 +12,8 @@ class ChapterZip < ApplicationRecord
 
 
   def build_default_zip_info
-    self.zip_info = {'source' => {'attach_ids' => [], 'ignore_ids' => []},
-                 'target' => {'attach_ids' => [], 'ignore_ids' => []}
+    self.zip_info = {'source' => {'attach_ids' => []},
+                 'target' => {'attach_ids' => []}
     }
     source_locs = get_locs(source_ps)
     target_locs = get_locs(target_ps)
@@ -31,10 +31,9 @@ class ChapterZip < ApplicationRecord
     self.zip_info ||= {}
     for p in ['source', 'target']
       zip_info[p] ||= {}
-      for l in ['ignore_ids', 'attach_ids']
-        zip_info[p][l] ||= []
-        zip_info[p][l] = zip_info[p][l].map(&:to_i)
-      end
+      k = 'attach_ids'
+      zip_info[p][k] ||= []
+      zip_info[p][k] = zip_info[p][k].map(&:to_i)
     end
   end
 
@@ -97,7 +96,7 @@ class ChapterZip < ApplicationRecord
   def source_ps
     unless @source_ps
       @source_ps = source_chapter.paragraphs.where(
-        "position >= ?", start_position_source)
+        "position >= ?", start_position_source).active
       if end_position_source
         @source_ps = @source_ps.where("position <= ?", end_position_source)
       end
@@ -109,7 +108,7 @@ class ChapterZip < ApplicationRecord
   def target_ps
     unless @target_ps
       @target_ps = target_chapter.paragraphs.where(
-        "position >= ?", start_position_target)
+        "position >= ?", start_position_target).active
       if end_position_target
         @target_ps = @target_ps.where("position <= ?", end_position_target)
       end
@@ -123,7 +122,7 @@ class ChapterZip < ApplicationRecord
       if z_inf['attach_ids'].include?(p.id)
         acc[-1].append(p)
         acc
-      elsif z_inf['ignore_ids'].exclude?(p.id)
+      else
         acc.append([p])
       end
     end

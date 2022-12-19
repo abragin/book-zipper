@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_13_085905) do
+ActiveRecord::Schema.define(version: 2022_12_19_122538) do
 
   create_table "book_zips", force: :cascade do |t|
     t.integer "ebook_source_id"
@@ -94,6 +94,7 @@ ActiveRecord::Schema.define(version: 2022_12_13_085905) do
     t.integer "chapter_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "ignore", default: false
     t.index ["chapter_id"], name: "index_paragraphs_on_chapter_id"
   end
 

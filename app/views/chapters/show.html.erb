@@ -1,6 +1,14 @@
 <h2> Chapter </h2>
 <p><%= link_to @chapter.epub_book.title, epub_book_chapters_path(@epub_book) %>/
 <%= @chapter.title %>
-<% @chapter.paragraphs.each do |paragraph| %>
-  <p> <%= paragraph.content %> </p>
+<%= form_with model: [@epub_book, @chapter] do |form| %>
+  <% @chapter.paragraphs.each do |paragraph| %>
+
+    <p> <%= paragraph.content %> <br>
+    Ignore: <%= check_box_tag 'chapter[ignore_paragraph_ids][]', paragraph.id,
+          paragraph.ignore -%>
+    </p>
+  <% end %>
+  <%= hidden_field_tag 'chapter[keep_params]', 'keep_params' %>
+  <%= form.submit %>
 <% end %>

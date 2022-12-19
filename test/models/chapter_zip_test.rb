@@ -17,14 +17,14 @@ class ChepterZipTest < ActiveSupport::TestCase
     )
     cz.process_zip_info
     expected = {
-      'source' => {'attach_ids' => [1, 2], 'ignore_ids' => []},
-      'target' => {'attach_ids' => [], 'ignore_ids' => []},
+      'source' => {'attach_ids' => [1, 2]},
+      'target' => {'attach_ids' => []}
     }
     assert_equal expected, cz.zip_info
   end
 
   test '#build_groupped_ps' do
-    z_inf = {'attach_ids' => [chapters(:one).paragraphs[1].id], 'ignore_ids' => []}
+    z_inf = {'attach_ids' => [chapters(:one).paragraphs[1].id]}
     bgp_res = ChapterZip.new.build_groupped_ps(chapters(:one).paragraphs, z_inf)
     assert_equal 2, bgp_res.length
     assert_equal 2, bgp_res[0].length

@@ -20,7 +20,8 @@ class ChapterZipsController < ApplicationController
   def update
     @chapter_zip = ChapterZip.find(params[:id])
     if @chapter_zip.update(chapter_zip_params)
-      redirect_to edit_book_zip_chapter_zip_path(@chapter_zip)
+      redirect_to edit_book_zip_chapter_zip_path(
+        @chapter_zip.book_zip, @chapter_zip)
     else
       render :edit
     end

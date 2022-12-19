@@ -5,8 +5,6 @@
       <tr>
       <td>
         Position: <%= p.position %><br/>
-        Ignore: <%= check_box_tag 'chapter_zip[zip_info][source][ignore_ids][]', p.id,
-          (zip_info['source']['ignore_ids'].include?(p.id)) -%><br/>
         Merge with prev: <%= check_box_tag 'chapter_zip[zip_info][source][attach_ids][]', p.id,
           (zip_info['source']['attach_ids'].include?(p.id)) -%>
       </td>
@@ -22,8 +20,6 @@
       <tr>
       <td>
         Position: <%= p.position %><br/>
-        Ignore: <%= check_box_tag 'chapter_zip[zip_info][target][ignore_ids][]', p.id,
-          (zip_info['target']['ignore_ids'].include?(p.id)) -%><br/>
         Merge with prev: <%= check_box_tag 'chapter_zip[zip_info][target][attach_ids][]', p.id,
           (zip_info['target']['attach_ids'].include?(p.id)) -%>
       </td>
