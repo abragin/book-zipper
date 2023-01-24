@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ChepterZipTest < ActiveSupport::TestCase
+class ChapterZipTest < ActiveSupport::TestCase
   test '#build_paragraph_matches' do
     new_cz = ChapterZip.create(
       book_zip: book_zips(:bookzipone),
@@ -12,15 +12,20 @@ class ChepterZipTest < ActiveSupport::TestCase
   end
 
   test '#process_zip_info' do
-    cz = ChapterZip.new(
-      zip_info: {'source' => {'attach_ids' => ['1', '2']}}
-    )
+    cz = chapter_zips(:one)
+    cz.zip_info = {
+      'source' => {'attach_ids' => [cz.source_ps[2].id.to_s]},
+      'target' => {'attach_ids' => [cz.target_ps[1].id.to_s]}
+    }
     cz.process_zip_info
     expected = {
-      'source' => {'attach_ids' => [1, 2]},
-      'target' => {'attach_ids' => []}
+      'source' => {'attach_ids' => [cz.source_ps[1].id, cz.source_ps[2].id]},
+      'target' => {'attach_ids' => [cz.target_ps[1].id]}
     }
-    assert_equal expected, cz.zip_info
+    assert_equal [cz.target_ps[1].id], cz.zip_info['target']['attach_ids']
+    assert_equal 2, cz.zip_info['source']['attach_ids'].length
+    assert_includes cz.zip_info['source']['attach_ids'], cz.source_ps[1].id
+    assert_includes cz.zip_info['source']['attach_ids'], cz.source_ps[2].id
   end
 
   test '#build_groupped_ps' do
@@ -31,17 +36,18 @@ class ChepterZipTest < ActiveSupport::TestCase
     assert_equal 1, bgp_res[1].length
   end
 
-  test "#get_attach_idxs" do
-    loc_target = [0.33, 0.66]
-    loc_source = [0.1, 0.4, 0.8]
-    cz = ChapterZip.new
-    assert_equal [1],# [[0,1],[2]],
-      cz.get_attach_idxs(loc_source, loc_target)
-    loc_source = [0.1, 0.2, 0.3]
-    assert_equal [1], #[[0,1],[2]],
-      cz.get_attach_idxs(loc_source, loc_target)
-    loc_source = [0.1, 0.7, 0.8]
-    assert_equal [2], #[[0],[1,2]],
-      cz.get_attach_idxs(loc_source, loc_target)
+  test '#build_default_zip_info' do
+    cz = ChapterZip.new(
+      book_zip: book_zips(:bookzipone),
+      source_chapter: chapters(:one),
+      target_chapter: chapters(:two)
+    )
+    expected_zi = {
+      'source' => {'attach_ids' => [paragraphs(:one_sentence_paragraph).id]},
+      'target' => {'attach_ids' => []},
+    }
+    cz.build_default_zip_info
+    assert_equal expected_zi, cz.zip_info
   end
+
 end

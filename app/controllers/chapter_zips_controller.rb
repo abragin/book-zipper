@@ -19,6 +19,9 @@ class ChapterZipsController < ApplicationController
 
   def update
     @chapter_zip = ChapterZip.find(params[:id])
+    if params['chapter_zip']['zip_info'].blank?
+      @chapter_zip.zip_info = {}
+    end
     if @chapter_zip.update(chapter_zip_params)
       redirect_to edit_book_zip_chapter_zip_path(
         @chapter_zip.book_zip, @chapter_zip)

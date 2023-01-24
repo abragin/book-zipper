@@ -1,15 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-chapter_one:
+one:
   title: MyString
   book_zip: bookzipone
   position: 1
-  source_chapter: 
-  target_chapter: 
+  source_chapter: one
+  target_chapter: two
 
 chapter_two:
   title: MyString
   book_zip: bookzipone
   position: 2
-  source_chapter: 
-  target_chapter: 
+  source_chapter:
+  target_chapter:

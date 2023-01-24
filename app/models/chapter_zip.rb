@@ -6,7 +6,7 @@ class ChapterZip < ApplicationRecord
   belongs_to :source_chapter, class_name: "Chapter"
   belongs_to :target_chapter, class_name: "Chapter"
   before_create :set_title, :set_end_positions
-  before_validation :process_zip_info, if: Proc.new { |cz| cz.zip_info.present? }
+  before_validation :process_zip_info
   before_save :build_paragraph_matches
   serialize :zip_info, JSON
 
@@ -15,25 +15,57 @@ class ChapterZip < ApplicationRecord
     self.zip_info = {'source' => {'attach_ids' => []},
                  'target' => {'attach_ids' => []}
     }
-    source_locs = get_locs(source_ps)
-    target_locs = get_locs(target_ps)
-    if source_locs.length > target_locs.length
-      zip_info['source']['attach_ids'] = get_attach_idxs(
-        source_locs, target_locs).map {|sip| source_ps[sip].id}
-    else
-      zip_info['target']['attach_ids'] = get_attach_idxs(
-        target_locs, source_locs).map {|tip| target_ps[tip].id}
+    source_weights = get_weights(source_ps)
+    target_weights = get_weights(target_ps)
+    zipper = ChapterZipper.new(source_weights, target_weights)
+    source_idx, target_idx = zipper.get_merge_idx
+    zip_info['source']['attach_ids'] = source_idx.map {
+      |sip| source_ps[sip].id
+    }
+    zip_info['target']['attach_ids'] = target_idx.map {
+      |tip| target_ps[tip].id
+    }
+  end
+
+  def get_updated_attach_ids(ps, attach_ids, cnt)
+    res = []
+    ps.reverse.each do |p|
+      if attach_ids.exclude?(p.id)
+        res.append(p.id)
+      end
+      if res.length == cnt
+        return res
+      end
     end
+    return res
   end
 
   def process_zip_info
+    if new_record?
+      build_default_zip_info
+    else
+      self.zip_info ||= {}
+    end
     #turn string ids into int ids if necessary
-    self.zip_info ||= {}
     for p in ['source', 'target']
       zip_info[p] ||= {}
       k = 'attach_ids'
       zip_info[p][k] ||= []
       zip_info[p][k] = zip_info[p][k].map(&:to_i)
+    end
+    # adding extra merge indexes to the end, if length mismatch is present
+    res_source_len = self.source_ps.length - zip_info['source']['attach_ids'].length
+    res_target_len = self.target_ps.length - zip_info['target']['attach_ids'].length
+    if res_source_len > res_target_len
+      zip_info['source']['attach_ids'] += get_updated_attach_ids(
+        source_ps, zip_info['source']['attach_ids'],
+        res_source_len - res_target_len
+      )
+    elsif res_target_len > res_source_len
+      zip_info['target']['attach_ids'] += get_updated_attach_ids(
+        target_ps, zip_info['target']['attach_ids'],
+        res_target_len - res_source_len
+      )
     end
   end
 
@@ -43,54 +75,21 @@ class ChapterZip < ApplicationRecord
     (t_len.to_f / s_len).between?(0.9, 1.1) || ((s_len - t_len).abs < 3)
   end
 
-  def get_locs(ps)
+  def get_weights(ps)
     ps_ls = ps.map do |p|
       p.content.split().length
     end
     len_total = ps_ls.sum.to_f
-    weights = ps_ls.map{|l| l/len_total}
-    locs = [weights[0]/2.0]
-    pos = [weights[0]]
-    weights[1..].each do |w|
-      locs.append(pos[-1] + w/2.0)
-      pos.append(pos[-1] + w)
-    end
-    locs
+    ps_ls.map{|l| l/len_total}
   end
 
   def set_title
-    self.title = source_chapter.title + ' - ' + target_chapter.title
+    self.title = source_chapter.title.strip + ' - ' + target_chapter.title.strip
   end
 
   def set_end_positions
     self.end_position_source ||= self.source_chapter.paragraphs.last.position
     self.end_position_target ||= self.target_chapter.paragraphs.last.position
-  end
-
-  def get_attach_idxs(loc_source, loc_target)
-    # assuming loc_source.length > loc_target.length
-    # output: [index of paragraphs thet should be attached to previn source]
-    last_target_pos = 0
-    target_source_diff = loc_source.length - loc_target.length
-    res = []
-    loc_source[1..].each_with_index do |loc, i|
-      source_pos = i + 1
-      if target_source_diff == 0
-        return res
-      elsif (last_target_pos == loc_target.length - 1)
-        res.append(source_pos)
-      else
-        dist_to_t0 = (loc - loc_target[last_target_pos]).abs
-        dist_to_t1 = (loc - loc_target[last_target_pos+1]).abs
-        if dist_to_t0 < dist_to_t1
-          res.append(source_pos)
-          target_source_diff -= 1
-        else
-          last_target_pos += 1
-        end
-      end
-    end
-    res
   end
 
   def source_ps
@@ -130,7 +129,6 @@ class ChapterZip < ApplicationRecord
 
   def build_paragraph_matches
     paragraph_matches.destroy_all
-    build_default_zip_info unless zip_info
     groupped_source = build_groupped_ps(source_ps, zip_info['source'])
     groupped_target = build_groupped_ps(target_ps, zip_info['target'])
     # TODO: both length should be equal, check on validation
