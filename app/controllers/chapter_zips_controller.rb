@@ -7,7 +7,10 @@ class ChapterZipsController < ApplicationController
   def create
     @chapter_zip = ChapterZip.new(chapter_zip_params)
     if @chapter_zip.save
-      redirect_to @chapter_zip.book_zip
+      redirect_to edit_book_zip_chapter_zip_path(
+        @chapter_zip.book_zip,
+        @chapter_zip
+      )
     else
       render :new
     end

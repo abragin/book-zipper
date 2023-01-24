@@ -10,10 +10,10 @@
     <li>
       <%= chapter_zip.position %>.
       <%= link_to (chapter_zip.source_chapter.title +
-             ("(#{chapter_zip.start_position_source}-#{chapter_zip.end_position_source})")),
+             ("(#{chapter_zip.start_position_source}-#{chapter_zip.end_position_source}/#{chapter_zip.source_chapter.max_p_position})")),
       epub_book_chapter_path(chapter_zip.source_chapter.epub_book, chapter_zip.source_chapter) %> -
       <%= link_to (chapter_zip.target_chapter.title +
-             ("(#{chapter_zip.start_position_target}-#{chapter_zip.end_position_target})")),
+               ("(#{chapter_zip.start_position_target}-#{chapter_zip.end_position_target}/#{chapter_zip.target_chapter.max_p_position})")),
       epub_book_chapter_path(chapter_zip.target_chapter.epub_book, chapter_zip.target_chapter) %>
       <%= link_to '(Edit)', edit_book_zip_chapter_zip_path(@book_zip, chapter_zip) %>
       <%= link_to "Destroy", book_zip_chapter_zip_path(@book_zip, chapter_zip),
