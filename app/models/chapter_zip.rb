@@ -7,7 +7,7 @@ class ChapterZip < ApplicationRecord
   belongs_to :target_chapter, class_name: "Chapter"
   before_create :set_title, :set_end_positions
   before_validation :process_zip_info
-  before_save :build_paragraph_matches
+  before_save :build_paragraph_matches, if: :has_changes_to_save?
   serialize :zip_info, JSON
 
 
