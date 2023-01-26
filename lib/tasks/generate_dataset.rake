@@ -4,13 +4,13 @@ task :generate_dataset do
 
   res = BookZip.all.map do |book_zip|
     chapters = book_zip.chapter_zips.map do |cz|
-      ps_source = cz.paragraph_matches.flat_map{|pm| pm.paragraphs_source}
+      ps_source = cz.paragraph_matches.flat_map{|pm| pm.source_paragraphs}
       ps_ls = ps_source.map do |p|
         p.content.split().length
       end
       len_total = ps_ls.sum.to_f
       ws1 = ps_ls.map{|l| l/len_total}
-      ps_target = cz.paragraph_matches.flat_map{|pm| pm.paragraphs_target}
+      ps_target = cz.paragraph_matches.flat_map{|pm| pm.target_paragraphs}
       ps_ls = ps_target.map do |p|
         p.content.split().length
       end

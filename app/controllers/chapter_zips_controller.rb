@@ -17,7 +17,9 @@ class ChapterZipsController < ApplicationController
   end
 
   def edit
-    @chapter_zip = ChapterZip.find(params[:id])
+    @chapter_zip = ChapterZip.includes(
+      paragraph_matches: [:source_paragraphs, :target_paragraphs]
+    ).find(params[:id])
   end
 
   def update

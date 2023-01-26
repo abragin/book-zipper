@@ -167,10 +167,8 @@ class ChapterZip < ApplicationRecord
     (0...pm_len).each do |pos|
         self.paragraph_matches.build(
           position: pos,
-          source_start_position: groupped_source[pos][0].position,
-          source_end_position: groupped_source[pos][-1].position,
-          target_start_position: groupped_target[pos][0].position,
-          target_end_position: groupped_target[pos][-1].position,
+          source_paragraphs: groupped_source[pos],
+          target_paragraphs: groupped_target[pos],
           chapter_zip: self
         )
     end

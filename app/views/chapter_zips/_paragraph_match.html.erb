@@ -1,7 +1,7 @@
 <tr>
   <td>
     <table>
-    <% paragraph_match.paragraphs_source.each do |p| %>
+    <% paragraph_match.source_paragraphs.each do |p| %>
       <tr>
       <td>
         Position: <%= p.position %><br/>
@@ -17,7 +17,7 @@
   </td>
   <td>
     <table>
-    <% paragraph_match.paragraphs_target.each do |p| %>
+    <% paragraph_match.target_paragraphs.each do |p| %>
       <tr>
       <td>
         Position: <%= p.position %><br/>

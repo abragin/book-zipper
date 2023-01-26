@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_19_122538) do
+ActiveRecord::Schema.define(version: 2023_01_26_162601) do
 
   create_table "book_zips", force: :cascade do |t|
     t.integer "ebook_source_id"
@@ -86,6 +86,20 @@ ActiveRecord::Schema.define(version: 2022_12_19_122538) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["chapter_zip_id"], name: "index_paragraph_matches_on_chapter_zip_id"
+  end
+
+  create_table "paragraph_matches_source_paragraphs", id: false, force: :cascade do |t|
+    t.integer "paragraph_match_id"
+    t.integer "paragraph_id"
+    t.index ["paragraph_id"], name: "index_paragraph_matches_source_paragraphs_on_paragraph_id"
+    t.index ["paragraph_match_id"], name: "index_paragraph_matches_source_paragraphs_on_paragraph_match_id"
+  end
+
+  create_table "paragraph_matches_target_paragraphs", id: false, force: :cascade do |t|
+    t.integer "paragraph_match_id"
+    t.integer "paragraph_id"
+    t.index ["paragraph_id"], name: "index_paragraph_matches_target_paragraphs_on_paragraph_id"
+    t.index ["paragraph_match_id"], name: "index_paragraph_matches_target_paragraphs_on_paragraph_match_id"
   end
 
   create_table "paragraphs", force: :cascade do |t|
