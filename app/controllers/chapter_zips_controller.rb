@@ -22,6 +22,11 @@ class ChapterZipsController < ApplicationController
 
   def update
     @chapter_zip = ChapterZip.find(params[:id])
+    if params['paragraph_ignore_ids']
+      Paragraph.where('id in (?)', params["paragraph_ignore_ids"]).update_all(
+        ignore: true
+      )
+    end
     if params['chapter_zip']['zip_info'].blank?
       @chapter_zip.zip_info = {}
     end
