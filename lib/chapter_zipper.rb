@@ -9,8 +9,8 @@ class ChapterZipper
     :merged_target_idx
 
   def initialize(source_weights, target_weights)
-    @source_weights = source_weights
-    @target_weights = target_weights
+    @source_weights = source_weights.map{|w| if w > 0 then w else 1.0e-10 end}
+    @target_weights = target_weights.map{|w| if w > 0 then w else 1.0e-10 end}
     @merged_source_idx = Set[]
     @merged_target_idx = Set[]
     @source_mapping = Array(0..source_weights.length)
@@ -110,20 +110,6 @@ class ChapterZipper
     end.sum / c_weights_zip.size
     [w_distance, w_distance_after, c_distance_after]
   end
-
-  # Weights of paragraphs after merges are applied
-  #def res_weights(weights, merge_idx)
-    #res = [weights[0]]
-    #weights[1..].each_with_index do |w, idx|
-      #i = idx + 1
-      #if i in merge_idx:
-        #res[-1] += w
-      #else
-        #res.append(w)
-      #end
-    #end
-    #res
-  #end
 
   def next_merge
     if (@s_pointer == @source_weights.size) && (@t_pointer == @target_weights.size)
