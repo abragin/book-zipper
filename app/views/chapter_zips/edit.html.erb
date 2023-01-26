@@ -4,6 +4,11 @@
 <%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
 <%= @chapter_zip.source_chapter.title + ' - ' + @chapter_zip.target_chapter.title%>
 </p>
+<% flash.each do |type, msg| %>
+  <div>
+    <%= msg %>
+  </div>
+<% end %>
 
 <%= form_with model: [@chapter_zip.book_zip, @chapter_zip] do |form| %>
   <div>
@@ -41,5 +46,6 @@
 
   <div>
     <%= form.submit %>
+    <%= form.submit 'Update and create next', name: 'update_and_create' %>
   </div>
 <% end %>

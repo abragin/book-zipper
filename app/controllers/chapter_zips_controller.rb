@@ -26,8 +26,19 @@ class ChapterZipsController < ApplicationController
       @chapter_zip.zip_info = {}
     end
     if @chapter_zip.update(chapter_zip_params)
-      redirect_to edit_book_zip_chapter_zip_path(
-        @chapter_zip.book_zip, @chapter_zip)
+      if params[:update_and_create]
+        next_chapter = @chapter_zip.next_chapter_zip
+        if next_chapter && next_chapter.save
+          redirect_to edit_book_zip_chapter_zip_path(
+            next_chapter.book_zip, next_chapter)
+        else
+          flash.alert = 'New ChapterZip creation failed'
+          render :edit
+        end
+      else
+        redirect_to edit_book_zip_chapter_zip_path(
+          @chapter_zip.book_zip, @chapter_zip)
+      end
     else
       render :edit
     end

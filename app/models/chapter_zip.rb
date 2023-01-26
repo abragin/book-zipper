@@ -27,6 +27,37 @@ class ChapterZip < ApplicationRecord
     }
   end
 
+  def next_chapter_zip
+    if source_chapter.max_p_position == end_position_source
+      next_s_chapter = book_zip.ebook_source.chapters.where(
+        "position >  ?", source_chapter.position).order(:position).first
+      next_s_position = 0
+    else
+      next_s_chapter = source_chapter
+      next_s_position = end_position_source + 1
+    end
+    if target_chapter.max_p_position == end_position_target
+      next_t_chapter = book_zip.ebook_target.chapters.where(
+        "position >  ?", target_chapter.position).order(:position).first
+      next_t_position = 0
+    else
+      next_t_chapter = target_chapter
+      next_t_position = end_position_target + 1
+    end
+    if next_s_chapter && next_t_chapter
+      ChapterZip.new(
+        position: position + 1,
+        source_chapter: next_s_chapter,
+        target_chapter: next_t_chapter,
+        start_position_source: next_s_position,
+        start_position_target: next_t_position,
+        book_zip: book_zip
+      )
+    else
+      nil
+    end
+  end
+
   def get_updated_attach_ids(ps, attach_ids, cnt)
     res = []
     ps.reverse.each do |p|
