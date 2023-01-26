@@ -10,18 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_26_193114) do
+ActiveRecord::Schema.define(version: 2023_01_26_195156) do
 
   create_table "book_zips", force: :cascade do |t|
     t.integer "ebook_source_id"
     t.integer "ebook_target_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "current_source_paragraph_id"
-    t.integer "current_target_paragraph_id"
-    t.boolean "in_progress", default: true
-    t.index ["current_source_paragraph_id"], name: "index_book_zips_on_current_source_paragraph_id"
-    t.index ["current_target_paragraph_id"], name: "index_book_zips_on_current_target_paragraph_id"
     t.index ["ebook_source_id"], name: "index_book_zips_on_ebook_source_id"
     t.index ["ebook_target_id"], name: "index_book_zips_on_ebook_target_id"
   end
@@ -51,6 +46,9 @@ ActiveRecord::Schema.define(version: 2023_01_26_193114) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["epub_book_id"], name: "index_chapters_on_epub_book_id"
+  end
+
+  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
   end
 
   create_table "epub_books", force: :cascade do |t|
