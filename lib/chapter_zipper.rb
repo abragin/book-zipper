@@ -177,11 +177,7 @@ class ChapterZipper
         @source_mapping[i] -= 1
       end
       @current_source_weights = new_weights[:new_s_w]
-      #res_weights(
-        #source_weights, @merged_source_idx
-      #)
       @current_c_source_weights = new_weights[:new_c_s]
-      #c_weights(@current_source_weights)
     end
     if ti
       @merged_target_idx.add(ti)
@@ -189,11 +185,7 @@ class ChapterZipper
         @target_mapping[i] -= 1
       end
       @current_target_weights = new_weights[:new_t_w]
-      #res_weights(
-        #@target_weights, @merged_target_idx
-      #)
       @current_c_target_weights = new_weights[:new_c_t]
-      #c_weights(@current_target_weights)
     end
   end
 

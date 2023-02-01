@@ -1,6 +1,6 @@
 class Chapter < ApplicationRecord
   has_many :paragraphs,
-    -> { order('position') },
+    -> { order('paragraphs.position') },
      dependent: :destroy
   belongs_to :epub_book
 

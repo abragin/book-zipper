@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     resources :chapters, only: [:index, :show, :update]
     member do
       post :create_chapters
+      post :update_ignored_paragraphs
+      get :filter_paragraphs
     end
   end
 end

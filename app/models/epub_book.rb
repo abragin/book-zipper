@@ -6,8 +6,11 @@ class EpubBook < ApplicationRecord
     dependent: :destroy
   has_many :book_zips, dependent: :destroy
   has_many :chapters,
-    -> { order('position') },
+    -> { order('chapters.position') },
     dependent: :destroy
+  has_many :paragraphs,
+    -> {order 'chapters.position, paragraphs.position'},
+    through: :chapters
 
   def file=(file)
     self.filename = file.original_filename
