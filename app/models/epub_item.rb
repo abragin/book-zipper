@@ -41,4 +41,8 @@ class EpubItem < ApplicationRecord
       current_title[tt]
     end.filter(&:present?).join('/')
   end
+
+  def body_text
+    Nokogiri::HTML(content).xpath('/html/body').text
+  end
 end
