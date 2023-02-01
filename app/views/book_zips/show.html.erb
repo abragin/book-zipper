@@ -1,6 +1,5 @@
 <h1> Book zip </h1>
-<p><%= link_to "Books", epub_books_path %>/<%= @book_zip.ebook_source.title %> +
-  <%= @book_zip.ebook_target.title %>
+<p><%= @book_zip.ebook_source.title %> + <%= @book_zip.ebook_target.title %>
 </p>
 <%= link_to "New chapter", new_book_zip_chapter_zip_path(@book_zip) %>
 

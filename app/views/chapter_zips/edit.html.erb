@@ -1,6 +1,5 @@
 <h2> Edit chapter zip </h2>
 <p>
-<%= link_to "Book zips", book_zips_path %> /
 <%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
 <%= @chapter_zip.source_chapter.title + ' - ' + @chapter_zip.target_chapter.title%>
 </p>

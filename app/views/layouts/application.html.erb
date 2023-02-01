@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>DatasetBuilder</title>
+    <title>BookZipper</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,6 +11,10 @@
   </head>
 
   <body>
+    <div class='navbar'>
+    <%= link_to "Books", epub_books_path %>
+    <%= link_to "Book zips", book_zips_path %>
+    </div>
     <%= yield %>
   </body>
 </html>
