@@ -8,6 +8,6 @@ class BookZip < ApplicationRecord
      dependent: :destroy
 
   def title
-    ebook_source.title + ' - ' + ebook_target.title
+    "#{ebook_source.book.title} (#{ebook_source.language.name} - #{ebook_target.language.name})"
   end
 end
