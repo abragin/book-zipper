@@ -7,7 +7,7 @@ one:
 
 two:
   position: 2
-  content: "<html><body><div>><h2>Part 2</h2><p>Third <a>this should be removed </a> paragraph</p>\n</div></body></html>"
+  content: "<html><body><div>><h2>\n Part 2  </h2><p>Third <a>this should be removed </a> paragraph</p>\n<p> \n <p>  </div></body></html>"
   epub_book: testepubbook
 
 three:
@@ -17,7 +17,7 @@ three:
 
 four:
   position: 4
-  content: "<html><body><div>><p>Sixth paragraph</p>\n<h3>Chapter 2</h3><p>Seventh paragraph</p></div></body></html>"
+  content: "<html><body><div>><p>Sixth paragraph</p>\n<h3>  Chapter 2 </h3><p>Seventh paragraph</p></div></body></html>"
   epub_book: testepubbook
 
 five:

@@ -23,14 +23,16 @@ class EpubItem < ApplicationRecord
           c.search(epub_book.excluded_content_tag).remove
         end
         content_txt = c.text
-        current_content[-1][1].append(content_txt)
+        if content_txt.split.size > 0
+          current_content[-1][1].append(content_txt)
+        end
       end
     end
   end
 
   def update_title(current_title, tag)
     tag_i = epub_book.title_tags.index(tag.name)
-    current_title[tag.name] = tag.text
+    current_title[tag.name] = tag.text.strip
     epub_book.title_tags[tag_i+1..].each do |tt|
       current_title[tt] = ""
     end
