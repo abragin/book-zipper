@@ -2,10 +2,13 @@
 
 <%= form_with model: @epub_book do |form| %>
   <div>
-    <%= form.label :title %><br>
-    <%= form.text_field :title %>
+    <%= form.label :book %><br>
+    <%= form.collection_select :book_id, Book.all, :id, :title %>
   </div>
-
+  <div>
+    <%= form.label :language %><br>
+    <%= form.collection_select :language_id, Language.all, :id, :name %>
+  </div>
   <div>
     <%= form.label :file %><br>
     <%= form.file_field :file %>

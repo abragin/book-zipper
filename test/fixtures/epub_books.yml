@@ -2,6 +2,8 @@
 
 testepubbook:
   title: "Testbook title"
+  book: war_and_peace
+  language: ger
   filename: 'testbook.epub'
   content_location: 'div'
   title_tags: ['h1','h2','h3']
@@ -13,6 +15,8 @@ testepubbook:
 nodivandabook:
   title: "Second testbook"
   filename: 'test.epub'
+  book: romeo_and_juliet
+  language: eng
   content_location: ''
   title_tags: ['h3']
   content_tag: 'p'

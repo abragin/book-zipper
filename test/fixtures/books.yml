@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+war_and_peace:
+  title: War and Peace
+  author: tolstoy
+
+romeo_and_juliet:
+  title: Romeo and Juliet
+  author: shakespeare

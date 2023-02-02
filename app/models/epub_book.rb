@@ -11,6 +11,8 @@ class EpubBook < ApplicationRecord
   has_many :paragraphs,
     -> {order 'chapters.position, paragraphs.position'},
     through: :chapters
+  belongs_to :book
+  belongs_to :language
 
   def file=(file)
     self.filename = file.original_filename

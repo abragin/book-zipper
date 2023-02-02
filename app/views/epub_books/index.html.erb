@@ -7,7 +7,7 @@
     <li>
       <%= link_to epub_book.title, epub_book_path(epub_book) %>
       (<%= epub_book.filename %>)
-      <%= link_to "Edit parsing options", edit_epub_book_path(epub_book) %>
+      <%= link_to "Edit", edit_epub_book_path(epub_book) %>
       <%= link_to "Destroy", epub_book_path(epub_book),
                   method: :delete,
                   data: { confirm: "Are you sure?" } %>

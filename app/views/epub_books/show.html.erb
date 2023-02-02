@@ -1,6 +1,6 @@
 <h1>Epub book</h1>
 <p><%= @epub_book.title %>
-<%= link_to "Edit parsing options", edit_epub_book_path(@epub_book) %>
+<%= link_to "Edit", edit_epub_book_path(@epub_book) %>
 <%= link_to ("Chapters (" + @epub_book.chapters.count.to_s + ")"),
   epub_book_chapters_path(@epub_book) %>
 <%= link_to "Ignored paragraphs", filter_paragraphs_epub_book_path(@epub_book) %>

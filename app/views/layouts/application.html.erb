@@ -12,8 +12,11 @@
 
   <body>
     <div class='navbar'>
-    <%= link_to "Books", epub_books_path %>
+    <%= link_to "Epub books", epub_books_path %>
     <%= link_to "Book zips", book_zips_path %>
+    <%= link_to "Books", books_path %>
+    <%= link_to "Authors", authors_path %>
+    <%= link_to "Languages", languages_path %>
     </div>
     <%= yield %>
   </body>

@@ -10,7 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_26_195156) do
+ActiveRecord::Schema.define(version: 2023_02_02_095338) do
+
+  create_table "authors", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "book_zips", force: :cascade do |t|
     t.integer "ebook_source_id"
@@ -19,6 +25,14 @@ ActiveRecord::Schema.define(version: 2023_01_26_195156) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ebook_source_id"], name: "index_book_zips_on_ebook_source_id"
     t.index ["ebook_target_id"], name: "index_book_zips_on_ebook_target_id"
+  end
+
+  create_table "books", force: :cascade do |t|
+    t.string "title"
+    t.integer "author_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["author_id"], name: "index_books_on_author_id"
   end
 
   create_table "chapter_zips", force: :cascade do |t|
@@ -62,6 +76,10 @@ ActiveRecord::Schema.define(version: 2023_01_26_195156) do
     t.string "excluded_content_tag"
     t.integer "start_position"
     t.integer "end_position"
+    t.integer "book_id"
+    t.integer "language_id"
+    t.index ["book_id"], name: "index_epub_books_on_book_id"
+    t.index ["language_id"], name: "index_epub_books_on_language_id"
   end
 
   create_table "epub_items", force: :cascade do |t|
@@ -72,6 +90,12 @@ ActiveRecord::Schema.define(version: 2023_01_26_195156) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["epub_book_id"], name: "index_epub_items_on_epub_book_id"
+  end
+
+  create_table "languages", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "paragraph_matches", force: :cascade do |t|
