@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_02_095338) do
+ActiveRecord::Schema.define(version: 2023_02_02_113703) do
 
   create_table "authors", force: :cascade do |t|
     t.string "name"
@@ -66,7 +66,6 @@ ActiveRecord::Schema.define(version: 2023_02_02_095338) do
   end
 
   create_table "epub_books", force: :cascade do |t|
-    t.string "title"
     t.string "filename"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

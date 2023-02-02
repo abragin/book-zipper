@@ -1,7 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 testepubbook:
-  title: "Testbook title"
   book: war_and_peace
   language: ger
   filename: 'testbook.epub'
@@ -13,7 +12,6 @@ testepubbook:
   end_position: 4
 
 nodivandabook:
-  title: "Second testbook"
   filename: 'test.epub'
   book: romeo_and_juliet
   language: eng

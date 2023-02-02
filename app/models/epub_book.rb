@@ -28,6 +28,10 @@ class EpubBook < ApplicationRecord
     end.compact
   end
 
+  def title
+    "#{book.title} (#{language.name})"
+  end
+
   def title_tags_text=(v)
     self.title_tags = v.split(';')
   end
