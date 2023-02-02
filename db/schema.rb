@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_02_125746) do
+ActiveRecord::Schema.define(version: 2023_02_02_140049) do
 
   create_table "authors", force: :cascade do |t|
     t.string "name"
@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(version: 2023_02_02_125746) do
   end
 
   create_table "chapter_zips", force: :cascade do |t|
-    t.string "title"
     t.integer "book_zip_id"
     t.integer "position"
     t.datetime "created_at", precision: 6, null: false

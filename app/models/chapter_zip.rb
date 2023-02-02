@@ -5,7 +5,7 @@ class ChapterZip < ApplicationRecord
      dependent: :destroy
   belongs_to :source_chapter, class_name: "Chapter"
   belongs_to :target_chapter, class_name: "Chapter"
-  before_create :set_title, :set_end_positions
+  before_create :set_end_positions
   before_validation :process_zip_info
   before_save :build_paragraph_matches, if: :has_changes_to_save?
   serialize :zip_info, JSON
@@ -114,8 +114,8 @@ class ChapterZip < ApplicationRecord
     ps_ls.map{|l| l/len_total}
   end
 
-  def set_title
-    self.title = source_chapter.title.strip + ' - ' + target_chapter.title.strip
+  def title
+    "#{source_chapter.title} - #{target_chapter.title}"
   end
 
   def set_end_positions
