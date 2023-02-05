@@ -1,14 +1,14 @@
 <h1> New book zip </h1>
 
-<%= form_with model: @book_zip do |form| %>
+<%= form_with model: [@book, @book_zip] do |form| %>
   <div>
     <%= form.label :ebook_source %><br>
-    <%= form.collection_select :ebook_source_id, EpubBook.all, :id, :title  %>
+    <%= form.collection_select :ebook_source_id, @book.epub_books, :id, :title  %>
   </div>
 
   <div>
     <%= form.label :ebook_target %><br>
-    <%= form.collection_select :ebook_target_id, EpubBook.all, :id, :title  %>
+    <%= form.collection_select :ebook_target_id, @book.epub_books, :id, :title  %>
   </div>
   <div>
     <%= form.submit %>
