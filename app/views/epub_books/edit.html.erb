@@ -1,41 +1,41 @@
 <h1> Edit Epub book</h1>
 
 <%= form_with model: @epub_book do |form| %>
-  <div>
-    <%= form.label :book %><br>
+  <div class="field">
+    <%= form.label :book %>
     <%= form.collection_select :book_id, Book.all, :id, :title %>
   </div>
-  <div>
-    <%= form.label :language %><br>
+  <div class="field">
+    <%= form.label :language %>
     <%= form.collection_select :language_id, Language.all, :id, :name %>
   </div>
-  <div>
-    <%= form.label :content_location %><br>
+  <div class="field">
+    <%= form.label :content_location %>
     <%= form.text_field :content_location %>
   </div>
-  <div>
-    <%= form.label :title_tags %><br>
+  <div class="field">
+    <%= form.label :title_tags %>
     <%= form.text_field :title_tags_text %>
   </div>
 
-  <div>
-    <%= form.label :content_tag %><br>
+  <div class="field">
+    <%= form.label :content_tag %>
     <%= form.text_field :content_tag %>
   </div>
-  <div>
-    <%= form.label :excluded_content_tag %><br>
+  <div class="field">
+    <%= form.label :excluded_content_tag %>
     <%= form.text_field :excluded_content_tag %>
   </div>
-  <div>
-    <%= form.label :start_position %><br>
+  <div class="field">
+    <%= form.label :start_position %>
     <%= form.number_field :start_position %>
   </div>
-  <div>
-    <%= form.label :end_position %><br>
+  <div class="field">
+    <%= form.label :end_position %>
     <%= form.number_field :end_position %>
   </div>
 
-  <div>
+  <div class="actions">
     <%= form.submit %>
   </div>
 <% end %>

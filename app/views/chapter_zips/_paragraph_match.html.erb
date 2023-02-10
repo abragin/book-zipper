@@ -4,10 +4,16 @@
     <% paragraph_match.source_paragraphs.each do |p| %>
       <tr>
       <td>
-        Position: <%= p.position %><br/>
-        Merge with prev: <%= check_box_tag 'chapter_zip[zip_info][source][attach_ids][]', p.id,
-          (zip_info['source']['attach_ids'].include?(p.id)) -%> <br/>
-        Ignore: <%= check_box_tag '[paragraph_ignore_ids][]', p.id -%>
+        Position: <%= p.position %>
+        <div class="field">
+          <%= label_tag "merge_with_prev" %>
+          <%= check_box_tag 'chapter_zip[zip_info][source][attach_ids][]', p.id,
+            (zip_info['source']['attach_ids'].include?(p.id)) -%>
+        </div>
+        <div class="field">
+          <%= label_tag "ignore" %>
+          <%= check_box_tag '[paragraph_ignore_ids][]', p.id -%>
+        </div>
       </td>
       <td><%= p.content %></td>
       </tr>
@@ -21,9 +27,15 @@
       <tr>
       <td>
         Position: <%= p.position %><br/>
-        Merge with prev: <%= check_box_tag 'chapter_zip[zip_info][target][attach_ids][]', p.id,
-          (zip_info['target']['attach_ids'].include?(p.id)) -%><br/>
-        Ignore: <%= check_box_tag '[paragraph_ignore_ids][]', p.id -%>
+        <div class="field">
+          <%= label_tag "merge_with_prev" %>
+          <%= check_box_tag 'chapter_zip[zip_info][target][attach_ids][]', p.id,
+            (zip_info['target']['attach_ids'].include?(p.id)) -%><br/>
+        </div>
+        <div class="field">
+          <%= label_tag "ignore" %>
+          <%= check_box_tag '[paragraph_ignore_ids][]', p.id -%>
+        </div>
       </td>
       <td><%= p.content %></td>
       </tr>

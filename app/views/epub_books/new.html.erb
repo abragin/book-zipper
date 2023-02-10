@@ -1,19 +1,19 @@
 <h1> New Epub book </h1>
 
 <%= form_with model: @epub_book do |form| %>
-  <div>
-    <%= form.label :book %><br>
+  <div class="field">
+    <%= form.label :book %>
     <%= form.collection_select :book_id, Book.all, :id, :title %>
   </div>
-  <div>
-    <%= form.label :language %><br>
+  <div class="field">
+    <%= form.label :language %>
     <%= form.collection_select :language_id, Language.all, :id, :name %>
   </div>
-  <div>
-    <%= form.label :file %><br>
+  <div class="field">
+    <%= form.label :file %>
     <%= form.file_field :file %>
   </div>
-  <div>
+  <div class="actions">
     <%= form.submit %>
   </div>
 <% end %>

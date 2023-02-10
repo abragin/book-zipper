@@ -10,24 +10,24 @@
 <% end %>
 
 <%= form_with model: [@chapter_zip.book_zip, @chapter_zip] do |form| %>
-  <div>
-    <%= form.label :start_position_source %><br>
+  <div class="field">
+    <%= form.label :start_position_source %>
     <%= form.number_field :start_position_source %>
   </div>
-  <div>
-    <%= form.label :end_position_source %><br>
+  <div class="field">
+    <%= form.label :end_position_source %>
     <%= form.number_field :end_position_source %>
   </div>
-  <div>
-    <%= form.label :start_position_target %><br>
+  <div class="field">
+    <%= form.label :start_position_target %>
     <%= form.number_field :start_position_target %>
   </div>
-  <div>
-    <%= form.label :end_position_target %><br>
+  <div class="field">
+    <%= form.label :end_position_target %>
     <%= form.number_field :end_position_target %>
   </div>
-  <div>
-    <%= form.label :position %><br>
+  <div class="field">
+    <%= form.label :position %>
     <%= form.number_field :position %>
   </div>
   <table border=1>
@@ -43,7 +43,7 @@
   </table>
 
 
-  <div>
+  <div class="actions">
     <%= form.submit %>
     <%= form.submit 'Update and create next', name: 'update_and_create' %>
   </div>

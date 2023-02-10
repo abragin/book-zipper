@@ -1,15 +1,25 @@
 <h2> Ignored paragraphs search</h2>
 <div>
 <%= form_with url: filter_paragraphs_epub_book_path(@epub_book), method: :get do |form| %>
-  <%= form.label "Search regexp:" %>
-  <%= form.text_field 'paragraph_search[regexp]', value: @search['regexp'] %>
-  <%= form.label "Not ignored" %>
-  <%= check_box_tag 'paragraph_search[not_ignored]', '1',  @search['not_ignored'] %>
-  <%= form.label "Ignored" %>
-  <%= check_box_tag 'paragraph_search[ignored]', '1',  @search['ignored'] %>
-  <%= form.label "Has no words" %>
-  <%= check_box_tag 'paragraph_search[has_no_words]', '1', @search['has_no_words']%>
-  <%= form.submit "Search" %>
+  <div class="field">
+    <%= form.label "Search regexp:" %>
+    <%= form.text_field 'paragraph_search[regexp]', value: @search['regexp'] %>
+  </div>
+  <div class="field">
+    <%= form.label "Not ignored" %>
+    <%= check_box_tag 'paragraph_search[not_ignored]', '1',  @search['not_ignored'] %>
+  </div>
+  <div class="field">
+    <%= form.label "Ignored" %>
+    <%= check_box_tag 'paragraph_search[ignored]', '1',  @search['ignored'] %>
+  </div>
+  <div class="field">
+    <%= form.label "Has no words" %>
+    <%= check_box_tag 'paragraph_search[has_no_words]', '1', @search['has_no_words']%>
+  </div>
+  <div class="actions">
+    <%= form.submit "Search" %>
+  </div>
 <% end %>
 </div>
 <div>
@@ -20,8 +30,10 @@
   <% @paragraphs.each do |p| %>
     <tr>
       <td>
-      <%= hidden_field_tag 'current_paragraphs_ids[]', p.id %>
-      <%= check_box_tag 'ignored_paragraphs_ids[]', p.id, p.ignore %>
+        <div class="field">
+          <%= hidden_field_tag 'current_paragraphs_ids[]', p.id %>
+          <%= check_box_tag 'ignored_paragraphs_ids[]', p.id, p.ignore %>
+        </div>
       </td>
       <td>
         <%= p.content %>

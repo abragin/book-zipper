@@ -46,7 +46,7 @@ class EpubBooksController < ApplicationController
         r = Regexp.new @search['regexp']
         @paragraphs = @paragraphs.filter{|p| p.content.match r}
       end
-      @paragraphs = @paragraphs.limit(200)
+      @paragraphs = @paragraphs[..200]
     else
       @paragraphs = []
     end
