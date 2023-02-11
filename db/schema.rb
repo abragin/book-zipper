@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_02_140049) do
+ActiveRecord::Schema.define(version: 2023_02_11_153008) do
 
   create_table "authors", force: :cascade do |t|
     t.string "name"
@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 2023_02_02_140049) do
     t.integer "end_position"
     t.integer "book_id", null: false
     t.integer "language_id", null: false
+    t.string "custom_update_title", default: ""
     t.index ["book_id"], name: "index_epub_books_on_book_id"
     t.index ["language_id"], name: "index_epub_books_on_language_id"
   end

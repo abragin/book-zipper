@@ -1,4 +1,5 @@
 class EpubItem < ApplicationRecord
+  include CustomTitleProcessing
   belongs_to :epub_book
 
   def content_pretty
@@ -29,8 +30,8 @@ XSL
        end
     doc = Nokogiri::HTML(content).xpath(doc_path)
     doc.children.each do |c|
-      if epub_book.title_tags.include?(c.name)
-        update_title(current_title, c)
+      content_present = current_content[-1][1].present?
+      if update_title(current_title, c, content_present)
         if current_content[-1][1].present?
           current_content.append [title_to_text(current_title), []]
         else
@@ -48,11 +49,27 @@ XSL
     end
   end
 
-  def update_title(current_title, tag)
-    tag_i = epub_book.title_tags.index(tag.name)
-    current_title[tag.name] = tag.text.strip
-    epub_book.title_tags[tag_i+1..].each do |tt|
-      current_title[tt] = ""
+  def update_title(current_title, tag, content_present)
+    if epub_book.custom_update_title.present?
+      c_method = epub_book.custom_update_title.to_sym
+      if CustomTitleProcessing.public_instance_methods.include?(c_method)
+        public_send(c_method, current_title, tag, content_present)
+      else
+        raise Exception.new("custom_update_title method is not defined")
+      end
+    else
+      update_title_simple(current_title, tag)
+    end
+  end
+
+  def update_title_simple(current_title, tag)
+    if epub_book.title_tags.include?(tag.name)
+      tag_i = epub_book.title_tags.index(tag.name)
+      current_title[tag.name] = tag.text.strip
+      epub_book.title_tags[tag_i+1..].each do |tt|
+        current_title[tt] = ""
+      end
+      true
     end
   end
 

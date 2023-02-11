@@ -109,7 +109,7 @@ class EpubBooksController < ApplicationController
     params.require(:epub_book).permit(
       :file, :content_location, :title_tags_text, :content_tag,
       :excluded_content_tag, :start_position, :end_position, :book_id,
-      :language_id
+      :language_id, :custom_update_title
      )
   end
 end

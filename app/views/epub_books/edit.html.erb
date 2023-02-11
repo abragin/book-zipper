@@ -17,6 +17,10 @@
     <%= form.label :title_tags %>
     <%= form.text_field :title_tags_text %>
   </div>
+  <div class="field">
+    <%= form.label :custom_update_title %>
+    <%= form.select :custom_update_title, custom_update_title_options %>
+  </div>
 
   <div class="field">
     <%= form.label :content_tag %>

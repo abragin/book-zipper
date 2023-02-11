@@ -38,7 +38,7 @@ class EpubItemTest < ActiveSupport::TestCase
     current_title = {"h1" => 'Book 1', "h2" => "Part 1", 'h3' => "Chapter 1"}
     item = epub_items(:two)
     doc = Nokogiri::HTML(item.content)
-    item.update_title(current_title, doc.xpath('/html/body/div/h2')[0])
+    assert item.update_title(current_title, doc.xpath('/html/body/div/h2')[0], false)
     exp = {"h1" => 'Book 1', "h2" => "Part 2", 'h3' => ""}
     assert_equal exp, current_title
   end
