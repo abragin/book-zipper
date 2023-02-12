@@ -28,6 +28,38 @@ class EpubBook < ApplicationRecord
     end.compact
   end
 
+  def title_conditions
+    @title_conditions ||= title_tags.map do |tt|
+      tag, class_start = tt.split('.')
+      _, start = tt.split('>')
+      res = {tag: tag.split('>')[0]}
+      if start
+        res[:start] = start
+      end
+      if class_start
+        cl, _ = class_start.split('>')
+        res[:class] = cl
+      end
+      res
+    end
+    @title_conditions
+  end
+
+  def matching_tag_position(tag)
+    title_conditions.each_with_index do |tc, i|
+      class_match = !tc[:class] || (
+        tag.attributes['class'] && tag.attributes['class'].value == tc[:class]
+      )
+      node_text = tag.text.strip
+      start_match = !tc[:start] || node_text.starts_with?(tc[:start]
+      )
+      if (tag.name == tc[:tag]) && class_match && start_match
+        return i
+      end
+    end
+    return
+  end
+
   def title
     "#{book.title} (#{language.name})"
   end

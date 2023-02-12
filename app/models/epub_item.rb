@@ -63,9 +63,8 @@ XSL
   end
 
   def update_title_simple(current_title, tag)
-    if epub_book.title_tags.include?(tag.name)
-      tag_i = epub_book.title_tags.index(tag.name)
-      current_title[tag.name] = tag.text.strip
+    if tag_i = epub_book.matching_tag_position(tag)
+      current_title[epub_book.title_tags[tag_i]] = tag.text.strip
       epub_book.title_tags[tag_i+1..].each do |tt|
         current_title[tt] = ""
       end
