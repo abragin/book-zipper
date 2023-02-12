@@ -4,7 +4,12 @@ class EpubBook < ApplicationRecord
   has_many :epub_items,
     -> { order('position') },
     dependent: :destroy
-  has_many :book_zips, dependent: :destroy
+  has_many :book_zips_source, inverse_of: :ebook_source,
+    class_name: "BookZip", foreign_key: :ebook_source_id,
+    dependent: :destroy
+  has_many :book_zips_target, inverse_of: :ebook_target,
+    class_name: "BookZip", foreign_key: :ebook_target_id,
+    dependent: :destroy
   has_many :chapters,
     -> { order('chapters.position') },
     dependent: :destroy
