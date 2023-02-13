@@ -27,6 +27,7 @@ Epub items:
 <ul>
   <% @epub_book.epub_items.each do |epub_item| %>
     <li>
+      <%= epub_item.position %> -
       <%= link_to epub_item.name, epub_book_epub_item_path(@epub_book, epub_item) %>
       (<%= epub_item.body_text[..250] + '...' %>)
     </li>

@@ -3,12 +3,12 @@
 <%= form_with model: [@chapter_zip.book_zip, @chapter_zip] do |form| %>
   <div class="field">
     <%= form.label :source_chapter %>
-    <%= form.collection_select :source_chapter_id, @chapter_zip.book_zip.ebook_source.chapters, :id, :title_with_len %>
+    <%= form.collection_select :source_chapter_id, @chapter_zip.book_zip.ebook_source.chapters, :id, :title_with_position_and_len %>
   </div>
 
   <div class="field">
     <%= form.label :target_chapter %>
-    <%= form.collection_select :target_chapter_id, @chapter_zip.book_zip.ebook_target.chapters, :id, :title_with_len  %>
+    <%= form.collection_select :target_chapter_id, @chapter_zip.book_zip.ebook_target.chapters, :id, :title_with_position_and_len  %>
   </div>
   <div class="field">
     <%= form.label :start_position_source %>

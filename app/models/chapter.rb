@@ -8,7 +8,7 @@ class Chapter < ApplicationRecord
     paragraphs.maximum(:position)
   end
 
-  def title_with_len
-    "#{title} (#{max_p_position})"
+  def title_with_position_and_len
+    "#{position} - #{title} (#{max_p_position})"
   end
 end
