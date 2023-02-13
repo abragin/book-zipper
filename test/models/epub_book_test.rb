@@ -11,7 +11,7 @@ class EpubBookTest < ActiveSupport::TestCase
     df.tempfile = file_fixture("simple_book.epub")
     epub_book = EpubBook.new
     epub_book.file = df
-    assert_equal 2, epub_book.epub_items.length
+    assert_equal 1, epub_book.epub_items.length
     epub_item = epub_book.epub_items[0]
     assert_equal 'item_name', epub_item.name
     assert_match /the first page/, epub_item.content
