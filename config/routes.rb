@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   end
 
   resources :epub_books do
-    resources :epub_items, only: [:show]
+    resources :epub_items, only: [:show, :edit, :update]
     resources :chapters, only: [:index, :show, :update]
     member do
       post :create_chapters

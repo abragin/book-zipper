@@ -1,4 +1,7 @@
 <h1>Epub item</h1>
 <p><%= @epub_item.name %> (<%= @epub_item.position %>)</p>
-<p><%= link_to @epub_item.epub_book.title, epub_book_path(@epub_item.epub_book) %> </p>
+<p>
+  <%= link_to @epub_item.epub_book.title, epub_book_path(@epub_item.epub_book) %>
+  <%= link_to "Edit", edit_epub_book_epub_item_path(@epub_item.epub_book, @epub_item) %>
+</p>
 <p><pre><%= @epub_item.content_pretty %></pre> </p>

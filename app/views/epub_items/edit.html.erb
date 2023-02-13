@@ -1,0 +1,12 @@
+<h1> Edit Epub item</h1>
+
+<%= form_with model: [@epub_book, @epub_item] do |form| %>
+  <div class="field">
+    <%= form.label :content %>
+    <%= form.text_area :content, rows: 40, style: 'width:95%;' %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
