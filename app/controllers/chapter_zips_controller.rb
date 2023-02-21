@@ -22,6 +22,10 @@ class ChapterZipsController < ApplicationController
     ).find(params[:id])
   end
 
+  def edit_matching
+
+  end
+
   def update
     @chapter_zip = ChapterZip.find(params[:id])
     if params['paragraph_ignore_ids']

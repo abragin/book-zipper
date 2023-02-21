@@ -10,7 +10,12 @@ Rails.application.routes.draw do
   root "epub_books#index"
 
   resources :book_zips, only: [:index, :show, :destroy] do
-    resources :chapter_zips, only: [:new, :create, :edit, :update, :destroy]
+    resources :chapter_zips, only: [:new, :create, :edit, :update, :destroy] do
+      member do
+        get :edit_matching
+      end
+    end
+
   end
 
   resources :epub_books do

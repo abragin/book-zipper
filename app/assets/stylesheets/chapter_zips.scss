@@ -1,3 +1,32 @@
 // Place all the styles related to the ChapterZips controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+td.paragraphs {
+  vertical-align: top;
+}
+
+div.paragraph {
+  margin: 5px;
+  padding: 5px;
+  border-style: dashed;
+  border-width: 1px;
+}
+
+div.selected {
+  background-color: #CCC;
+}
+
+.selectBtnSrc {
+  float: right;
+  margin-left: 5px;
+}
+
+.selectBtnTgt {
+  float: left;
+  margin-right: 5px;
+}
+
+.skippedParagraph {
+  color: grey;
+}
