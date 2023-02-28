@@ -134,12 +134,6 @@ class ChapterZip < ApplicationRecord
     @target_ps
   end
 
-  class ParagraphMatchNew
-    include ActiveModel::API
-
-    attr_accessor :source_paragraphs, :target_paragraphs
-  end
-
   def paragraph_matches
     @paragraph_matches ||=
       begin
@@ -150,7 +144,7 @@ class ChapterZip < ApplicationRecord
         end
         matches_idx.append([source_ps.size, target_ps.size])
         matches_idx.each_cons(2).map do |m1, m2|
-          ParagraphMatchNew.new(
+          ParagraphMatch.new(
             source_paragraphs: source_ps[m1[0]...m2[0]],
             target_paragraphs: target_ps[m1[1]...m2[1]]
           )

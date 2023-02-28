@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_26_163502) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_28_110434) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -45,7 +45,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_26_163502) do
     t.integer "end_position_source"
     t.integer "start_position_target", default: 0
     t.integer "end_position_target"
-    t.text "zip_info_old"
     t.text "zip_info"
     t.index ["book_zip_id"], name: "index_chapter_zips_on_book_zip_id"
     t.index ["source_chapter_id"], name: "index_chapter_zips_on_source_chapter_id"
@@ -95,28 +94,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_26_163502) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "paragraph_matches", force: :cascade do |t|
-    t.integer "chapter_zip_id"
-    t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["chapter_zip_id"], name: "index_paragraph_matches_on_chapter_zip_id"
-  end
-
-  create_table "paragraph_matches_source_paragraphs", id: false, force: :cascade do |t|
-    t.integer "paragraph_match_id"
-    t.integer "paragraph_id"
-    t.index ["paragraph_id"], name: "index_paragraph_matches_source_paragraphs_on_paragraph_id"
-    t.index ["paragraph_match_id"], name: "index_paragraph_matches_source_paragraphs_on_paragraph_match_id"
-  end
-
-  create_table "paragraph_matches_target_paragraphs", id: false, force: :cascade do |t|
-    t.integer "paragraph_match_id"
-    t.integer "paragraph_id"
-    t.index ["paragraph_id"], name: "index_paragraph_matches_target_paragraphs_on_paragraph_id"
-    t.index ["paragraph_match_id"], name: "index_paragraph_matches_target_paragraphs_on_paragraph_match_id"
   end
 
   create_table "paragraphs", force: :cascade do |t|
