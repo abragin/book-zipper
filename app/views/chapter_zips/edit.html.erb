@@ -30,21 +30,24 @@
     <%= form.label :position %>
     <%= form.number_field :position %>
   </div>
-  <table border=1>
-    <tr>
-      <th> Source </th>
-      <th> Target </th>
-    </tr>
-  <%= render partial: "paragraph_match",
-    collection: @chapter_zip.paragraph_matches, locals: {
-    form: form,
-    zip_info: @chapter_zip.zip_info}
-  %>
-  </table>
-
-
   <div class="actions">
-    <%= form.submit %>
-    <%= form.submit 'Update and create next', name: 'update_and_create' %>
+    <%= form.submit data: { turbo_confirm: "Warning! Matching will be regenerated" } %>
   </div>
 <% end %>
+<%= link_to 'Edit matching',
+  edit_matching_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip),
+  data: {turbo: false}
+%>
+<%= link_to 'Build next chapter',
+  new_book_zip_chapter_zip_path(
+    @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
+  )
+%>
+<table border=1>
+  <tr>
+    <th> Source </th>
+    <th> Target </th>
+  </tr>
+<%= render partial: "paragraph_match",
+  collection: @chapter_zip.paragraph_matches  %>
+</table>

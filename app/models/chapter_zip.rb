@@ -1,36 +1,71 @@
 class ChapterZip < ApplicationRecord
   belongs_to :book_zip
-  has_many :paragraph_matches,
-    -> { order('position') },
-     dependent: :destroy
   belongs_to :source_chapter, class_name: "Chapter"
   belongs_to :target_chapter, class_name: "Chapter"
   before_create :set_end_positions
-  before_validation :process_zip_info
-  before_save :build_paragraph_matches, if: :has_changes_to_save?
+  before_save :build_default_zip_info, if: :zip_info_generation_required?
   serialize :zip_info, JSON
+  #serialize :zip_info_new, JSON
 
+  def id_pos_mapping
+    @id_pos_mapping ||= {
+      source: source_ps.map.with_index{|p,i| [p.id, i]}.to_h,
+      target: target_ps.map.with_index{|p,i| [p.id, i]}.to_h
+    }
+  end
+
+  def matching_data=(m_data)
+    matching = JSON.parse(m_data)
+    self.zip_info = {
+      ignored_source_ids: matching['skippedSource'].map{|i| source_ps[i].id},
+      ignored_target_ids: matching['skippedTarget'].map{|i| target_ps[i].id},
+      matches: matching['connections'].map do |c|
+        [source_ps[c[0]].id, target_ps[c[1]].id]
+      end
+    }
+  end
+
+  def matching_editor_data
+    rel_matches = zip_info['matches'].map do |m|
+      [id_pos_mapping[:source][m[0]], id_pos_mapping[:target][m[1]]]
+    end
+    {
+      'paragraphsSource' => source_ps.map{|p| {id: p.id, content: p.content}},
+      'paragraphsTarget' => target_ps.map{|p| {id: p.id, content: p.content}},
+      'skippedSource' => zip_info['ignored_source_ids'],
+      'skippedTarget' => zip_info['ignored_target_ids'],
+      'connections' => rel_matches
+    }
+  end
+
+  def merge_points_to_pz_starts(ps, merge_idx)
+    (0...ps.size).reduce([]) do |acc, ind|
+      if merge_idx.include?(ind)
+        acc
+      else
+        acc + [ps[ind].id]
+      end
+    end
+  end
 
   def build_default_zip_info
-    self.zip_info = {'source' => {'attach_ids' => []},
-                 'target' => {'attach_ids' => []}
-    }
     source_weights = get_weights(source_ps)
     target_weights = get_weights(target_ps)
     zipper = ChapterZipper.new(source_weights, target_weights)
     source_idx, target_idx = zipper.get_merge_idx
-    zip_info['source']['attach_ids'] = source_idx.map {
-      |sip| source_ps[sip].id
-    }
-    zip_info['target']['attach_ids'] = target_idx.map {
-      |tip| target_ps[tip].id
+    source_starts = merge_points_to_pz_starts(source_ps, source_idx)
+    target_starts = merge_points_to_pz_starts(target_ps, target_idx)
+    self.zip_info = {
+      "matches" => source_starts.zip(target_starts),
+      "ignored_source_ids" => [],
+      "ignored_target_ids" => []
     }
   end
 
   def next_chapter_zip
     if source_chapter.max_p_position == end_position_source
       next_s_chapter = book_zip.ebook_source.chapters.where(
-        "position >  ?", source_chapter.position).order(:position).first
+        "position > ?", source_chapter.position).order(:position).first
       next_s_position = 0
     else
       next_s_chapter = source_chapter
@@ -38,7 +73,7 @@ class ChapterZip < ApplicationRecord
     end
     if target_chapter.max_p_position == end_position_target
       next_t_chapter = book_zip.ebook_target.chapters.where(
-        "position >  ?", target_chapter.position).order(:position).first
+        "position > ?", target_chapter.position).order(:position).first
       next_t_position = 0
     else
       next_t_chapter = target_chapter
@@ -56,54 +91,6 @@ class ChapterZip < ApplicationRecord
     else
       nil
     end
-  end
-
-  def get_updated_attach_ids(ps, attach_ids, cnt)
-    res = []
-    ps.reverse.each do |p|
-      if attach_ids.exclude?(p.id)
-        res.append(p.id)
-      end
-      if res.length == cnt
-        return res
-      end
-    end
-    return res
-  end
-
-  def process_zip_info
-    if new_record?
-      build_default_zip_info
-    else
-      self.zip_info ||= {}
-    end
-    #turn string ids into int ids if necessary
-    for p in ['source', 'target']
-      zip_info[p] ||= {}
-      k = 'attach_ids'
-      zip_info[p][k] ||= []
-      zip_info[p][k] = zip_info[p][k].map(&:to_i)
-    end
-    # adding extra merge indexes to the end, if length mismatch is present
-    res_source_len = self.source_ps.length - zip_info['source']['attach_ids'].length
-    res_target_len = self.target_ps.length - zip_info['target']['attach_ids'].length
-    if res_source_len > res_target_len
-      zip_info['source']['attach_ids'] += get_updated_attach_ids(
-        source_ps, zip_info['source']['attach_ids'],
-        res_source_len - res_target_len
-      )
-    elsif res_target_len > res_source_len
-      zip_info['target']['attach_ids'] += get_updated_attach_ids(
-        target_ps, zip_info['target']['attach_ids'],
-        res_target_len - res_source_len
-      )
-    end
-  end
-
-  def ok_to_match(source_ps, target_ps)
-    s_len = source_ps.count
-    t_len = target_ps.count
-    (t_len.to_f / s_len).between?(0.9, 1.1) || ((s_len - t_len).abs < 3)
   end
 
   def get_weights(ps)
@@ -147,30 +134,37 @@ class ChapterZip < ApplicationRecord
     @target_ps
   end
 
-  def build_groupped_ps(ps, z_inf)
-    ps[1..].reduce([[ps[0]]]) do |acc, p|
-      if z_inf['attach_ids'].include?(p.id)
-        acc[-1].append(p)
-        acc
-      else
-        acc.append([p])
-      end
+  class ParagraphMatchNew
+    include ActiveModel::API
+
+    attr_accessor :source_paragraphs, :target_paragraphs
+  end
+
+  def paragraph_matches
+    @paragraph_matches ||=
+      begin
+        source_id_map = source_ps.map.with_index{|p,i| [p.id, i]}.to_h
+        target_id_map = target_ps.map.with_index{|p,i| [p.id, i]}.to_h
+        matches_idx = zip_info["matches"].map do |m|
+          [source_id_map[m[0]], target_id_map[m[1]]]
+        end
+        matches_idx.append([source_ps.size, target_ps.size])
+        matches_idx.each_cons(2).map do |m1, m2|
+          ParagraphMatchNew.new(
+            source_paragraphs: source_ps[m1[0]...m2[0]],
+            target_paragraphs: target_ps[m1[1]...m2[1]]
+          )
+        end
     end
   end
 
-  def build_paragraph_matches
-    paragraph_matches.destroy_all
-    groupped_source = build_groupped_ps(source_ps, zip_info['source'])
-    groupped_target = build_groupped_ps(target_ps, zip_info['target'])
-    # TODO: both length should be equal, check on validation
-    pm_len = [groupped_source.length, groupped_target.length].min
-    (0...pm_len).each do |pos|
-        self.paragraph_matches.build(
-          position: pos,
-          source_paragraphs: groupped_source[pos],
-          target_paragraphs: groupped_target[pos],
-          chapter_zip: self
-        )
-    end
+  protected
+
+  def zip_info_generation_required?
+    new_record? || (
+      source_chapter_changed? || target_chapter_changed? ||
+      start_position_source_changed? || end_position_source_changed? ||
+      start_position_target_changed? || end_position_target_changed?
+    )
   end
 end

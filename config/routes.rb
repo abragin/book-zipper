@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resources :chapter_zips, only: [:new, :create, :edit, :update, :destroy] do
       member do
         get :edit_matching
+        post :update_matching
       end
     end
 

@@ -1,12 +1,11 @@
 // Entry point for the build script in your package.json
 //import "@hotwired/turbo-rails"
 //import "./controllers"
-//import * as bootstrap from "bootstrap"
-//import "./components"
+//import * as bootstrap from "bootstrap" //import "./components"
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-const chapterZip = {
+const chapterZipDebug = {
   paragraphsSource: [
     {id: 10, content: "On returning from the review, Kutúzov took the Austrian general into his private room and"},
     {id: 11, content: "calling his adjutant, asked for some papers relating to the condition of the troops on their arrival, and the letters that had come from the Archduke Ferdinand,"},
@@ -34,6 +33,7 @@ class Paragraph extends React.Component{
    const selectBTN = (this.props.index > 0) ? (
      <button
        key="selectBTN"
+       type="button"
        onClick={() => this.props.handleClick(this.props.index, this.props.src)}>
        {(this.props.selected === this.props.index) ? "-" : "+"}
      </button>
@@ -41,6 +41,7 @@ class Paragraph extends React.Component{
    const skipBTN = (
      <button
        key="skipBTN"
+       type="button"
        onClick={() => this.props.handleParagraphSkip(this.props.index, this.props.src)}>
        {this.props.skipped ? "Unskip" : "Skip"} 
      </button>
@@ -48,6 +49,7 @@ class Paragraph extends React.Component{
    const mergePrevBTN = this.props.addMergePrevBTN ? (
      <button
        key="mergeBTN"
+       type="button"
        onClick={() => this.props.handleParagraphUnion(this.props.index, this.props.src)}>
        ^ </button>
    ) : null;
@@ -114,7 +116,15 @@ class ChapterZip extends React.Component{
     this.handleParagraphUnion = this.handleParagraphUnion.bind(this);
     this.handleParagraphSkip = this.handleParagraphSkip.bind(this);
   }
-  
+
+  outputData(){
+    return JSON.stringify({
+      skippedSource: this.state.skippedSource,
+      skippedTarget: this.state.skippedTarget,
+      connections: this.state.connections
+    })
+  }
+
   handleParagraphSkip(idx, src){
     if (src === 'source') {
       const skippedSource = new Set(this.state.skippedSource);
@@ -155,7 +165,7 @@ class ChapterZip extends React.Component{
       connections: newConnections
     });
   }
-  
+
   buildNewParagraphZip(sInd, tInd){
     const connectionsBefore = [];
     const connectionsAfter = [];
@@ -173,10 +183,10 @@ class ChapterZip extends React.Component{
     this.setState({
       connections: newConnections,
       selectedSource: null,
-      selectedTarget: null,      
+      selectedTarget: null,
     });
   }
-  
+
   handleParagraphClick(idx, src){
     let sId, tId
     if (src === 'source') {
@@ -212,6 +222,11 @@ class ChapterZip extends React.Component{
                       />));
     return (
       <div className="chapterzip-editor">
+        <input
+          type='hidden'
+          value={this.outputData()}
+          name='matching_data'
+        />
         <table border={1}>
          <thead>
            <tr>

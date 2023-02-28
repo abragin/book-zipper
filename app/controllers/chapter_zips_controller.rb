@@ -1,7 +1,22 @@
 class ChapterZipsController < ApplicationController
+  before_action :set_chapter_zip,
+    only: %i[ edit edit_matching update_matching update destroy ]
+
   def new
     @book_zip = BookZip.find(params[:book_zip_id])
-    @chapter_zip = ChapterZip.new(book_zip: @book_zip)
+    if params[:prev_chapter_id]
+      prev_chapter = ChapterZip.find(params[:prev_chapter_id])
+      next_chapter = prev_chapter.next_chapter_zip
+      if next_chapter && next_chapter.save
+        redirect_to edit_book_zip_chapter_zip_path(
+          next_chapter.book_zip, next_chapter)
+      else
+        flash.alert = 'New ChapterZip creation failed'
+        @chapter_zip = ChapterZip.new(book_zip: @book_zip)
+      end
+    else
+      @chapter_zip = ChapterZip.new(book_zip: @book_zip)
+    end
   end
 
   def create
@@ -17,52 +32,43 @@ class ChapterZipsController < ApplicationController
   end
 
   def edit
-    @chapter_zip = ChapterZip.includes(
-      paragraph_matches: [:source_paragraphs, :target_paragraphs]
-    ).find(params[:id])
   end
 
   def edit_matching
+  end
 
+  def update_matching
+    @chapter_zip.matching_data = params['matching_data']
+    if @chapter_zip.save
+      redirect_to edit_book_zip_chapter_zip_path(
+          @chapter_zip.book_zip, @chapter_zip)
+    else
+      flash.alert = 'Update failed!'
+      render :edit_matching
+    end
   end
 
   def update
-    @chapter_zip = ChapterZip.find(params[:id])
-    if params['paragraph_ignore_ids']
-      Paragraph.where('id in (?)', params["paragraph_ignore_ids"]).update_all(
-        ignore: true
-      )
-    end
-    if params['chapter_zip']['zip_info'].blank?
-      @chapter_zip.zip_info = {}
-    end
     if @chapter_zip.update(chapter_zip_params)
-      if params[:update_and_create]
-        next_chapter = @chapter_zip.next_chapter_zip
-        if next_chapter && next_chapter.save
-          redirect_to edit_book_zip_chapter_zip_path(
-            next_chapter.book_zip, next_chapter)
-        else
-          flash.alert = 'New ChapterZip creation failed'
-          render :edit
-        end
-      else
-        redirect_to edit_book_zip_chapter_zip_path(
-          @chapter_zip.book_zip, @chapter_zip)
-      end
+      redirect_to edit_book_zip_chapter_zip_path(
+        @chapter_zip.book_zip, @chapter_zip)
     else
+      flash.alert = 'Update failed!'
       render :edit
     end
   end
 
   def destroy
-    @chapter_zip = ChapterZip.find(params[:id])
     @chapter_zip.destroy
 
     redirect_to @chapter_zip.book_zip
   end
 
   private
+
+  def set_chapter_zip
+    @chapter_zip = ChapterZip.find(params[:id])
+  end
 
   def chapter_zip_params
     params.require(:chapter_zip).permit(

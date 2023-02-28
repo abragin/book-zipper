@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_14_144549) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_26_163502) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -45,6 +45,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_144549) do
     t.integer "end_position_source"
     t.integer "start_position_target", default: 0
     t.integer "end_position_target"
+    t.text "zip_info_old"
     t.text "zip_info"
     t.index ["book_zip_id"], name: "index_chapter_zips_on_book_zip_id"
     t.index ["source_chapter_id"], name: "index_chapter_zips_on_source_chapter_id"
