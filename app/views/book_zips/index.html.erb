@@ -4,7 +4,9 @@
   <% @book_zips.each do |book_zip| %>
     <li>
       <%= link_to book_zip.title, book_zip_path(book_zip) %>
-      <%= link_to 'Destroy', book_zip, method: :delete, data: { confirm: 'Are you sure?' } %>
+      <%= link_to 'Destroy', book_zip, data: {
+        turbo_method: :delete,
+        turbo_confirm: "Are you sure?" } %>
     </li>
   <% end %>
 </ul>
