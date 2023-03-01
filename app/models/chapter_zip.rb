@@ -5,7 +5,7 @@ class ChapterZip < ApplicationRecord
   before_create :set_end_positions
   before_save :build_default_zip_info, if: :zip_info_generation_required?
   serialize :zip_info, JSON
-  #serialize :zip_info_new, JSON
+
 
   def id_pos_mapping
     @id_pos_mapping ||= {
