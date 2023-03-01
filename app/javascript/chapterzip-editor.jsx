@@ -119,8 +119,8 @@ class ChapterZip extends React.Component{
 
   outputData(){
     return JSON.stringify({
-      skippedSource: this.state.skippedSource,
-      skippedTarget: this.state.skippedTarget,
+      skippedSource: Array.from(this.state.skippedSource),
+      skippedTarget: Array.from(this.state.skippedTarget),
       connections: this.state.connections
     })
   }

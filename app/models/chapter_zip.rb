@@ -29,11 +29,15 @@ class ChapterZip < ApplicationRecord
     rel_matches = zip_info['matches'].map do |m|
       [id_pos_mapping[:source][m[0]], id_pos_mapping[:target][m[1]]]
     end
+    s_ids = source_ps.map(&:id)
+    t_ids = target_ps.map(&:id)
     {
       'paragraphsSource' => source_ps.map{|p| {id: p.id, content: p.content}},
       'paragraphsTarget' => target_ps.map{|p| {id: p.id, content: p.content}},
-      'skippedSource' => zip_info['ignored_source_ids'],
-      'skippedTarget' => zip_info['ignored_target_ids'],
+      'skippedSource' =>  zip_info['ignored_source_ids'].map{
+        |iid| s_ids.index(iid)},
+      'skippedTarget' => zip_info['ignored_target_ids'].map{
+        |iid| t_ids.index(iid)},
       'connections' => rel_matches
     }
   end
