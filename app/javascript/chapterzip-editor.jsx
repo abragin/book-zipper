@@ -25,6 +25,7 @@ const chapterZipDebug = {
   connections: [[0,0], [2,1], [4,2]],
   skippedSource: [1],
   skippedTarget: [],
+  verifiedConnectionSourceId: 2,
 }
 
 class Paragraph extends React.Component{
@@ -43,7 +44,7 @@ class Paragraph extends React.Component{
        key="skipBTN"
        type="button"
        onClick={() => this.props.handleParagraphSkip(this.props.index, this.props.src)}>
-       {this.props.skipped ? "Unskip" : "Skip"} 
+       {this.props.skipped ? "Unskip" : "Skip"}
      </button>
    )
    const mergePrevBTN = this.props.addMergePrevBTN ? (
@@ -63,7 +64,38 @@ class Paragraph extends React.Component{
        {this.props.paragraph.content}
        </span>
    </div>)
- } 
+ }
+}
+
+class ParagraphZipStatus extends React.Component{
+  render(){
+    const verified = this.props.sourceParagraphId < this.props.verifiedConnectionSourceId
+    const moveVerifiedDownBTN = <button
+       key="verifyDownBTN"
+       onClick={() => this.props.handleChangeVerified(this.props.idx+1)}>
+       V
+    </button>
+    const moveVerifiedUpBTN = <button
+       key="verifyUpBTN"
+       onClick={() => this.props.handleChangeVerified(this.props.idx)}>
+       Λ
+    </button>
+    const rematchBelowBTN = <button
+       key="rematchBelowBTN"
+       type="button"
+       name="rematch_from_here"
+       onClick={() => this.props.handleRematchBelow(this.props.idx)}>
+       VVV
+    </button>
+    const showRematchBtn = this.props.sourceParagraphId === this.props.verifiedConnectionSourceId;
+    const changeVerifiedBTN = verified ? moveVerifiedUpBTN : moveVerifiedDownBTN;
+    const tdClass = verified ? "paragraphStatusVerified" : "paragraphStatusUnverified";
+    return (<td className={tdClass}>
+            {changeVerifiedBTN}
+        {showRematchBtn ? rematchBelowBTN : null}
+        </td>
+           )
+  }
 }
 
 class ParagraphZip extends React.Component{
@@ -94,7 +126,17 @@ class ParagraphZip extends React.Component{
         addMergePrevBTN={false}
         skipped={this.props.skippedTarget.has(tInd)}
       />))
-    return (<tr><td className="paragraphs">
+    const pz_status = (<ParagraphZipStatus
+                        sourceParagraphId={this.props.paragraphZip.sourceIds[0]}
+                        verifiedConnectionSourceId={this.props.verifiedConnectionSourceId}
+                        idx={this.props.idx}
+                        handleChangeVerified={this.props.handleChangeVerified}
+                        handleRematchBelow={this.props.handleRematchBelow}
+                        />
+                      )
+    return (<tr>
+          {pz_status}
+        <td className="paragraphs">
           {ps_source}
         </td><td className="paragraphs">
           {ps_target}
@@ -107,6 +149,7 @@ class ChapterZip extends React.Component{
     super(props);
     this.state = {
       connections: props.chapterZip.connections,
+      verifiedConnectionSourceId: props.chapterZip.verifiedConnectionSourceId,
       skippedSource: new Set(props.chapterZip.skippedSource),
       skippedTarget: new Set(props.chapterZip.skippedTarget),
       selectedSource: null,
@@ -115,14 +158,30 @@ class ChapterZip extends React.Component{
     this.handleParagraphClick = this.handleParagraphClick.bind(this);
     this.handleParagraphUnion = this.handleParagraphUnion.bind(this);
     this.handleParagraphSkip = this.handleParagraphSkip.bind(this);
+    this.handleChangeVerified = this.handleChangeVerified.bind(this);
+    this.handleRematchBelow = this.handleRematchBelow.bind(this);
   }
 
   outputData(){
     return JSON.stringify({
       skippedSource: Array.from(this.state.skippedSource),
       skippedTarget: Array.from(this.state.skippedTarget),
-      connections: this.state.connections
+      connections: this.state.connections,
+      verifiedConnectionSourceId: this.state.verifiedConnectionSourceId,
     })
+  }
+
+  handleChangeVerified(pmId){
+    const newVerified = (
+      this.state.connections.length > pmId ?
+      this.state.connections[pmId][0] :
+      this.props.chapterZip.paragraphsSource.length
+    )
+    this.setState({verifiedConnectionSourceId: newVerified})
+  }
+
+  handleRematchBelow(pmId){
+    console.log("Re-match bellow call:", pmId)
   }
 
   handleParagraphSkip(idx, src){
@@ -144,7 +203,7 @@ class ChapterZip extends React.Component{
       this.setState({skippedTarget: skippedTarget})
     };
   }
-  
+
   buildParagraphs(){
     // Add bottom of chapterZip
     const connAndBottom = this.state.connections.concat([[
@@ -158,11 +217,14 @@ class ChapterZip extends React.Component{
     };
     return(paragraphs);
   }
-  
+
   handleParagraphUnion(sInd) {
     const newConnections = this.state.connections.filter((c) => c[0] !== sInd);
+    const newVerified = this.state.connections.filter((c) => c[0] < sInd).pop()[0];
+
     this.setState({
-      connections: newConnections
+      connections: newConnections,
+      verifiedConnectionSourceId: newVerified,
     });
   }
 
@@ -182,6 +244,7 @@ class ChapterZip extends React.Component{
     );
     this.setState({
       connections: newConnections,
+      verifiedConnectionSourceId: sInd,
       selectedSource: null,
       selectedTarget: null,
     });
@@ -202,11 +265,12 @@ class ChapterZip extends React.Component{
       this.buildNewParagraphZip(sId, tId)
     }
   }
-  
+
   render(){
     const pzs = this.buildParagraphs(this.state.connections).map(
       (pz, idx) => (<ParagraphZip
                       key={idx}
+                      idx={idx}
                       paragraphZip={pz}
                       paragraphsSource={this.props.chapterZip.paragraphsSource}
                       paragraphsTarget={this.props.chapterZip.paragraphsTarget}
@@ -219,6 +283,9 @@ class ChapterZip extends React.Component{
                       handleParagraphSkip={this.handleParagraphSkip}
                       skippedSource={this.state.skippedSource}
                       skippedTarget={this.state.skippedTarget}
+                      verifiedConnectionSourceId={this.state.verifiedConnectionSourceId}
+                      handleChangeVerified={this.handleChangeVerified}
+                      handleRematchBelow={this.handleRematchBelow}
                       />));
     return (
       <div className="chapterzip-editor">
@@ -227,9 +294,11 @@ class ChapterZip extends React.Component{
           value={this.outputData()}
           name='matching_data'
         />
+
         <table border={1}>
          <thead>
            <tr>
+            <th> Status </th>
             <th> Source </th>
             <th> Target </th>
           </tr>

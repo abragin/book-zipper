@@ -30,3 +30,11 @@ div.selected {
 .skippedParagraph {
   color: grey;
 }
+
+td.paragraphStatusVerified {
+    background-color: lightgreen;
+}
+
+td.paragraphStatusUnverified {
+    background-color: yellow;
+}
