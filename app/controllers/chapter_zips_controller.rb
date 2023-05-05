@@ -39,12 +39,20 @@ class ChapterZipsController < ApplicationController
 
   def update_matching
     @chapter_zip.matching_data = params['matching_data']
-    if @chapter_zip.save
-      redirect_to edit_book_zip_chapter_zip_path(
+    if params["rematch_from_here"]
+      @chapter_zip.rebuild_zip_info
+      @chapter_zip.save!
+      redirect_to edit_matching_book_zip_chapter_zip_path(
           @chapter_zip.book_zip, @chapter_zip)
     else
-      flash.alert = 'Update failed!'
-      render :edit_matching
+      @chapter_zip.zip_info["verified_connection_source_id"] = nil
+      if @chapter_zip.save
+        redirect_to edit_book_zip_chapter_zip_path(
+            @chapter_zip.book_zip, @chapter_zip)
+      else
+        flash.alert = 'Update failed!'
+        render :edit_matching
+      end
     end
   end
 

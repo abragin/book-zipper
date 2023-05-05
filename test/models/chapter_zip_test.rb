@@ -16,7 +16,8 @@ class ChapterZipTest < ActiveSupport::TestCase
         paragraphs(:one_sentence_paragraph_again).id,
         paragraphs(:another_one_sentence_paragraph).id,
       ]],
-      "ignored_source_ids" => [], "ignored_target_ids" => []
+      "ignored_source_ids" => [], "ignored_target_ids" => [],
+      "verified_connection_source_id" => paragraphs(:nine_sentence_paragraph).id
     }
     cz.build_default_zip_info
     assert_equal expected_zi, cz.zip_info
@@ -40,4 +41,26 @@ class ChapterZipTest < ActiveSupport::TestCase
     assert_equal [1], med['skippedSource']
     assert_equal [1], med['skippedTarget']
   end
+
+  test "#rebuild_zip_info" do
+    cz = chapter_zips(:one)
+    matches = [[
+        paragraphs(:nine_sentence_paragraph).id,
+        paragraphs(:ten_sentence_paragraph).id,
+      ],[
+        paragraphs(:one_sentence_paragraph).id,
+        paragraphs(:another_one_sentence_paragraph).id,
+      ]]
+    cz.zip_info = {
+      "matches" => [matches[0]],
+      "ignored_source_ids" => [paragraphs(:one_sentence_paragraph_again).id],
+      "ignored_target_ids" => [],
+      "verified_connection_source_id" => paragraphs(
+        :nine_sentence_paragraph).id,
+    }
+    cz.rebuild_zip_info
+    assert_equal matches, cz.zip_info['matches']
+  end
+
+
 end

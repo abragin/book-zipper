@@ -82,7 +82,6 @@ class ParagraphZipStatus extends React.Component{
     </button>
     const rematchBelowBTN = <button
        key="rematchBelowBTN"
-       type="button"
        name="rematch_from_here"
        onClick={() => this.props.handleRematchBelow(this.props.idx)}>
        VVV

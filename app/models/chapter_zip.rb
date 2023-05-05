@@ -16,12 +16,14 @@ class ChapterZip < ApplicationRecord
 
   def matching_data=(m_data)
     matching = JSON.parse(m_data)
+    vcsp = source_ps[ matching['verifiedConnectionSourceId']]
     self.zip_info = {
       ignored_source_ids: matching['skippedSource'].map{|i| source_ps[i].id},
       ignored_target_ids: matching['skippedTarget'].map{|i| target_ps[i].id},
       matches: matching['connections'].map do |c|
         [source_ps[c[0]].id, target_ps[c[1]].id]
-      end
+      end,
+      verified_connection_source_id: vcsp && vcsp.id
     }
   end
 
@@ -31,6 +33,12 @@ class ChapterZip < ApplicationRecord
     end
     s_ids = source_ps.map(&:id)
     t_ids = target_ps.map(&:id)
+    vcsi = if zip_info["verified_connection_source_id"]
+             s_ids.index( zip_info["verified_connection_source_id"])
+           else
+             s_ids.length
+           end
+
     {
       'paragraphsSource' => source_ps.map{|p| {id: p.id, content: p.content}},
       'paragraphsTarget' => target_ps.map{|p| {id: p.id, content: p.content}},
@@ -38,7 +46,8 @@ class ChapterZip < ApplicationRecord
         |iid| s_ids.index(iid)},
       'skippedTarget' => zip_info['ignored_target_ids'].map{
         |iid| t_ids.index(iid)},
-      'connections' => rel_matches
+      'connections' => rel_matches,
+      "verifiedConnectionSourceId" => vcsi
     }
   end
 
@@ -52,18 +61,38 @@ class ChapterZip < ApplicationRecord
     end
   end
 
-  def build_default_zip_info
-    source_weights = get_weights(source_ps)
-    target_weights = get_weights(target_ps)
+  def rebuild_zip_info
+    verified_match_idx = zip_info["matches"].find_index do |m|
+      m[0] == zip_info["verified_connection_source_id"]
+    end
+    verified_matches = zip_info["matches"][..verified_match_idx]
+    verified_match = verified_matches[-1]
+    source_idx = source_ps.find_index{|p| p.id == verified_match[0]}
+    target_idx = target_ps.find_index{|p| p.id == verified_match[1]}
+    source_ps_unmatched = source_ps[source_idx..].filter do |p|
+      zip_info["ignored_source_ids"].exclude? p.id
+    end
+    target_ps_unmatched = target_ps[target_idx..].filter do |p|
+      zip_info["ignored_target_ids"].exclude? p.id
+    end
+    source_weights = get_weights(source_ps_unmatched)
+    target_weights = get_weights(target_ps_unmatched)
     zipper = ChapterZipper.new(source_weights, target_weights)
     source_idx, target_idx = zipper.get_merge_idx
-    source_starts = merge_points_to_pz_starts(source_ps, source_idx)
-    target_starts = merge_points_to_pz_starts(target_ps, target_idx)
+    source_starts = merge_points_to_pz_starts(source_ps_unmatched, source_idx)
+    target_starts = merge_points_to_pz_starts(target_ps_unmatched, target_idx)
+    self.zip_info["matches"] = verified_matches +
+      source_starts.zip(target_starts)[1..]
+  end
+
+  def build_default_zip_info
     self.zip_info = {
-      "matches" => source_starts.zip(target_starts),
+      "matches" => [[source_ps[0].id, target_ps[0].id]],
       "ignored_source_ids" => [],
-      "ignored_target_ids" => []
+      "ignored_target_ids" => [],
+      "verified_connection_source_id" => source_ps[0].id
     }
+    rebuild_zip_info
   end
 
   def next_chapter_zip
