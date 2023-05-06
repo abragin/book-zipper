@@ -95,6 +95,11 @@ class ChapterZip < ApplicationRecord
     rebuild_zip_info
   end
 
+  def build_next_chapter_allowed?
+    (book_zip.chapter_zips.last.id == self.id) &&
+      zip_info['verified_connection_source_id'].nil?
+  end
+
   def next_chapter_zip
     if source_chapter.max_p_position == end_position_source
       next_s_chapter = book_zip.ebook_source.chapters.where(

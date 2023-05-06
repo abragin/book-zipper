@@ -38,11 +38,13 @@
   edit_matching_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip),
   data: {turbo: false}
 %>
-<%= link_to 'Build next chapter',
-  new_book_zip_chapter_zip_path(
-    @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
-  )
-%>
+<% if @chapter_zip.build_next_chapter_allowed? %>
+  <%= link_to 'Build next chapter',
+    new_book_zip_chapter_zip_path(
+      @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
+    )
+  %>
+<% end %>
 <table border=1>
   <tr>
     <th> Source </th>

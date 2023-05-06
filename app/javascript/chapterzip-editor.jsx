@@ -133,11 +133,19 @@ class ParagraphZip extends React.Component{
                         handleRematchBelow={this.props.handleRematchBelow}
                         />
                       )
+    const nSourceParagraphs = range(this.props.paragraphZip.sourceIds).filter(
+      (i) => !this.props.skippedSource.has(i)
+    ).length;
+    const nTargetParagraphs = range(this.props.paragraphZip.targetIds).filter(
+      (i) => !this.props.skippedTarget.has(i)
+    ).length;
+    const sourcePClasses = (nSourceParagraphs < 2 ) ? "paragraphs" : "paragraphs multipleParagraphs";
+    const targetPClasses = (nTargetParagraphs < 2 ) ? "paragraphs" : "paragraphs multipleParagraphs";
     return (<tr>
           {pz_status}
-        <td className="paragraphs">
+        <td className={sourcePClasses}>
           {ps_source}
-        </td><td className="paragraphs">
+        </td><td className={targetPClasses}>
           {ps_target}
         </td></tr>)
     };
