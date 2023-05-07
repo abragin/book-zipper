@@ -135,7 +135,22 @@ class ChapterZip < ApplicationRecord
 
   def build_next_chapter_allowed?
     (book_zip.chapter_zips.last.id == self.id) &&
-      zip_info['verified_connection_source_id'].nil?
+      zip_info['verified_connection_source_id'].nil? &&
+      !final_chapter?
+  end
+
+  def next_chapter_message
+    if book_zip.chapter_zips.last.id != self.id
+      "Next chapter is already built."
+    elsif zip_info['verified_connection_source_id'].present?
+      "Current chapter is not verified. Use \"Edit matching\" to verify it."
+    elsif final_chapter?
+      "This is the final chapter zip!"
+    end
+  end
+
+  def final_chapter?
+    next_chapter_zip.nil?
   end
 
   def next_chapter_zip
