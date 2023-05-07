@@ -51,5 +51,7 @@
     <th> Target </th>
   </tr>
 <%= render partial: "paragraph_match",
-  collection: @chapter_zip.paragraph_matches  %>
+  collection: @chapter_zip.paragraph_matches,
+  locals: {zip_info: @chapter_zip.zip_info}
+%>
 </table>

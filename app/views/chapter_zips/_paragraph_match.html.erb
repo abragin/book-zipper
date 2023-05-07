@@ -6,7 +6,10 @@
       <td>
         <%= p.position %>
       </td>
-      <td><%= p.content %></td>
+      <td <%= h (zip_info['ignored_source_ids'].include? p.id) ? "class=\"skippedParagraph\"" : '' %> >
+        <td class="<%= "skippedParagraph" if zip_info['ignored_source_ids'].include? p.id %>" >
+        <%= p.content %>
+      </td>
       </tr>
     <% end %>
     </table>
@@ -19,7 +22,9 @@
       <td>
         <%= p.position %><br/>
       </td>
-      <td><%= p.content %></td>
+      <td class="<%= "skippedParagraph" if zip_info['ignored_target_ids'].include? p.id %>" >
+        <%= p.content %>
+      </td>
       </tr>
     <% end %>
     </table>
