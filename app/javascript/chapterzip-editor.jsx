@@ -26,6 +26,7 @@ const chapterZipDebug = {
   skippedSource: [1],
   skippedTarget: [],
   verifiedConnectionSourceId: 2,
+  inconsistentConnectionSourceId: 4,
 }
 
 class Paragraph extends React.Component{
@@ -70,6 +71,7 @@ class Paragraph extends React.Component{
 class ParagraphZipStatus extends React.Component{
   render(){
     const verified = this.props.sourceParagraphId < this.props.verifiedConnectionSourceId
+    const consistent = this.props.sourceParagraphId < this.props.inconsistentConnectionSourceId
     const moveVerifiedDownBTN = <button
        key="verifyDownBTN"
        onClick={() => this.props.handleChangeVerified(this.props.idx+1)}>
@@ -88,7 +90,10 @@ class ParagraphZipStatus extends React.Component{
     </button>
     const showRematchBtn = this.props.sourceParagraphId === this.props.verifiedConnectionSourceId;
     const changeVerifiedBTN = verified ? moveVerifiedUpBTN : moveVerifiedDownBTN;
-    const tdClass = verified ? "paragraphStatusVerified" : "paragraphStatusUnverified";
+    const tdClass = verified ? "paragraphStatusVerified" : (
+      consistent ? "paragraphStatusUnverified" : "paragraphStatusInconsistent"
+    );
+
     return (<td className={tdClass}>
             {changeVerifiedBTN}
         {showRematchBtn ? rematchBelowBTN : null}
@@ -128,6 +133,7 @@ class ParagraphZip extends React.Component{
     const pz_status = (<ParagraphZipStatus
                         sourceParagraphId={this.props.paragraphZip.sourceIds[0]}
                         verifiedConnectionSourceId={this.props.verifiedConnectionSourceId}
+                        inconsistentConnectionSourceId={this.props.inconsistentConnectionSourceId}
                         idx={this.props.idx}
                         handleChangeVerified={this.props.handleChangeVerified}
                         handleRematchBelow={this.props.handleRematchBelow}
@@ -291,6 +297,8 @@ class ChapterZip extends React.Component{
                       skippedSource={this.state.skippedSource}
                       skippedTarget={this.state.skippedTarget}
                       verifiedConnectionSourceId={this.state.verifiedConnectionSourceId}
+                      inconsistentConnectionSourceId={this.props.chapterZip.inconsistentConnectionSourceId}
+
                       handleChangeVerified={this.handleChangeVerified}
                       handleRematchBelow={this.handleRematchBelow}
                       />));

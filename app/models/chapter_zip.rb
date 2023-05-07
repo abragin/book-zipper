@@ -16,7 +16,7 @@ class ChapterZip < ApplicationRecord
 
   def matching_data=(m_data)
     matching = JSON.parse(m_data)
-    vcsp = source_ps[ matching['verifiedConnectionSourceId']]
+    vcsp = source_ps[matching['verifiedConnectionSourceId']]
     self.zip_info = {
       ignored_source_ids: matching['skippedSource'].map{|i| source_ps[i].id},
       ignored_target_ids: matching['skippedTarget'].map{|i| target_ps[i].id},
@@ -38,7 +38,11 @@ class ChapterZip < ApplicationRecord
            else
              s_ids.length
            end
-
+    icsi = if zip_info["inconsistent_connection_source_id"]
+             s_ids.index(zip_info["inconsistent_connection_source_id"])
+           else
+             s_ids.length
+           end
     {
       'paragraphsSource' => source_ps.map{|p| {id: p.id, content: p.content}},
       'paragraphsTarget' => target_ps.map{|p| {id: p.id, content: p.content}},
@@ -47,7 +51,9 @@ class ChapterZip < ApplicationRecord
       'skippedTarget' => zip_info['ignored_target_ids'].map{
         |iid| t_ids.index(iid)},
       'connections' => rel_matches,
-      "verifiedConnectionSourceId" => vcsi
+      "verifiedConnectionSourceId" => vcsi,
+      "inconsistentConnectionSourceId" => icsi
+
     }
   end
 
@@ -59,6 +65,39 @@ class ChapterZip < ApplicationRecord
         acc + [ps[ind].id]
       end
     end
+  end
+
+  def rebuild_zip_info_external(verified_matches, source_ps_unmatched, target_ps_unmatched)
+    body = {
+      source_ps: source_ps_unmatched.map(&:content),
+      target_ps: target_ps_unmatched.map(&:content)
+    }
+    headers = {'Content-Type': 'application/json' }
+    response = JSON.parse(Net::HTTP.post(
+      URI(Rails.configuration.chapter_matcher_ms[:url]),
+      body.to_json,
+      headers
+    ).read_body)
+    new_matches = response["connections"].map do |c|
+      [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
+    end
+    self.zip_info["matches"] = verified_matches + new_matches
+    if response["first_inconsistent_connection"]
+      self.zip_info["inconsistent_connection_source_id"] = new_matches[
+        response["first_inconsistent_connection"]][0]
+    end
+  end
+
+  def rebuild_zip_info_fallback(verified_matches, source_ps_unmatched,
+                                target_ps_unmatched)
+    source_weights = get_weights(source_ps_unmatched)
+    target_weights = get_weights(target_ps_unmatched)
+    zipper = ChapterZipper.new(source_weights, target_weights)
+    source_idx, target_idx = zipper.get_merge_idx
+    source_starts = merge_points_to_pz_starts(source_ps_unmatched, source_idx)
+    target_starts = merge_points_to_pz_starts(target_ps_unmatched, target_idx)
+    self.zip_info["matches"] = verified_matches +
+      source_starts.zip(target_starts)[1..]
   end
 
   def rebuild_zip_info
@@ -75,14 +114,13 @@ class ChapterZip < ApplicationRecord
     target_ps_unmatched = target_ps[target_idx..].filter do |p|
       zip_info["ignored_target_ids"].exclude? p.id
     end
-    source_weights = get_weights(source_ps_unmatched)
-    target_weights = get_weights(target_ps_unmatched)
-    zipper = ChapterZipper.new(source_weights, target_weights)
-    source_idx, target_idx = zipper.get_merge_idx
-    source_starts = merge_points_to_pz_starts(source_ps_unmatched, source_idx)
-    target_starts = merge_points_to_pz_starts(target_ps_unmatched, target_idx)
-    self.zip_info["matches"] = verified_matches +
-      source_starts.zip(target_starts)[1..]
+    if Rails.configuration.chapter_matcher_ms[:enabled]
+      rebuild_zip_info_external(verified_matches, source_ps_unmatched,
+                                target_ps_unmatched)
+    else
+      rebuild_zip_info_fallback(verified_matches, source_ps_unmatched,
+                                target_ps_unmatched)
+    end
   end
 
   def build_default_zip_info

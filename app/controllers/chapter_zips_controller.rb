@@ -46,6 +46,7 @@ class ChapterZipsController < ApplicationController
           @chapter_zip.book_zip, @chapter_zip)
     else
       @chapter_zip.zip_info["verified_connection_source_id"] = nil
+      @chapter_zip.zip_info["inconsistent_connection_source_id"] = nil
       if @chapter_zip.save
         redirect_to edit_book_zip_chapter_zip_path(
             @chapter_zip.book_zip, @chapter_zip)

@@ -1,0 +1,8 @@
+development:
+  enabled: true
+  url: "http://localhost:8000/match_chapter"
+test:
+  enabled: false
+production:
+  enabled: false
+
