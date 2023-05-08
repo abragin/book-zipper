@@ -15,7 +15,8 @@ class ChapterZipsController < ApplicationController
         @chapter_zip = ChapterZip.new(book_zip: @book_zip)
       end
     else
-      @chapter_zip = ChapterZip.new(book_zip: @book_zip)
+      pos = @book_zip.chapter_zips.maximum(:position) || 0
+      @chapter_zip = ChapterZip.new(book_zip: @book_zip, position: pos)
     end
   end
 
