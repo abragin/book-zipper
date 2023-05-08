@@ -1,6 +1,6 @@
 class ChapterZipsController < ApplicationController
   before_action :set_chapter_zip,
-    only: %i[ edit edit_matching update_matching update destroy ]
+    only: %i[ edit change_paragraph_ranges update_ranges update destroy ]
 
   def new
     @book_zip = BookZip.find(params[:book_zip_id])
@@ -31,14 +31,8 @@ class ChapterZipsController < ApplicationController
     end
   end
 
-  def edit
-  end
-
-  def edit_matching
-  end
-
-  def update_matching
-    @chapter_zip.matching_data = params['matching_data']
+  def update
+    @chapter_zip.update(chapter_zip_edit_params)
     if params["rematch_from_here"]
       @chapter_zip.rebuild_zip_info
       @chapter_zip.save!
@@ -52,18 +46,18 @@ class ChapterZipsController < ApplicationController
             @chapter_zip.book_zip, @chapter_zip)
       else
         flash.alert = 'Update failed!'
-        render :edit_matching
+        render :edit
       end
     end
   end
 
-  def update
+  def update_ranges
     if @chapter_zip.update(chapter_zip_params)
       redirect_to edit_book_zip_chapter_zip_path(
         @chapter_zip.book_zip, @chapter_zip)
     else
       flash.alert = 'Update failed!'
-      render :edit
+      render :change_paragraph_ranges
     end
   end
 
@@ -79,21 +73,18 @@ class ChapterZipsController < ApplicationController
     @chapter_zip = ChapterZip.find(params[:id])
   end
 
+  def chapter_zip_edit_params
+    params.require(:chapter_zip).permit(
+      :position, :matching_data
+    )
+
+  end
+
   def chapter_zip_params
     params.require(:chapter_zip).permit(
       :source_chapter_id, :target_chapter_id, :start_position_source,
       :start_position_target, :end_position_source, :end_position_target,
-      :position, :book_zip_id,
-      zip_info: [
-        source:  [
-          attach_ids: [],
-          ignore_ids: []
-        ],
-        target: [
-          attach_ids: [],
-          ignore_ids: []
-        ]
-      ]
+      :position, :book_zip_id
     )
   end
 end

@@ -307,7 +307,7 @@ class ChapterZip extends React.Component{
         <input
           type='hidden'
           value={this.outputData()}
-          name='matching_data'
+          name='chapter_zip[matching_data]'
         />
 
         <table border={1}>

@@ -17,31 +17,12 @@
   </div>
 <% end %>
 
-<%= form_with model: [@chapter_zip.book_zip, @chapter_zip] do |form| %>
-  <div class="field">
-    <%= form.label :start_position_source %>
-    <%= form.number_field :start_position_source %>
-  </div>
-  <div class="field">
-    <%= form.label :end_position_source %>
-    <%= form.number_field :end_position_source %>
-  </div>
-  <div class="field">
-    <%= form.label :start_position_target %>
-    <%= form.number_field :start_position_target %>
-  </div>
-  <div class="field">
-    <%= form.label :end_position_target %>
-    <%= form.number_field :end_position_target %>
-  </div>
-  <div class="field">
-    <%= form.label :position %>
-    <%= form.number_field :position %>
-  </div>
-  <div class="actions">
-    <%= form.submit data: { turbo_confirm: "Warning! Matching will be regenerated" } %>
-  </div>
-<% end %>
+<%= link_to 'Change paragraph ranges',
+  change_paragraph_ranges_book_zip_chapter_zip_path(
+    @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
+  ),
+  data: {turbo: false}
+%>
 
 <% next_chapter_message = @chapter_zip.next_chapter_message %>
 <% if next_chapter_message %>
@@ -56,10 +37,12 @@
 <% end %>
 
 <%= form_with(
-  url: update_matching_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip),
-  method: :post,
-  data: {turbo: false}
+  model: [@chapter_zip.book_zip, @chapter_zip], data: {turbo: false}
 ) do |form| %>
+  <div class="field">
+    <%= form.label :position %>
+    <%= form.number_field :position %>
+  </div>
   <div id='chapterzip-editor'>
   </div>
 
@@ -67,14 +50,3 @@
     <%= form.submit %>
   </div>
 <% end %>
-
-<%#<table border=1>%>
-  <%#<tr>%>
-    <%#<th> Source </th>%>
-    <%#<th> Target </th>%>
-  <%#</tr>%>
-<%#<%= render partial: "paragraph_match",%>
-  <%#collection: @chapter_zip.paragraph_matches,%>
-  <%#locals: {zip_info: @chapter_zip.zip_info}%>
-  <%#%>
-<%#</table>%>

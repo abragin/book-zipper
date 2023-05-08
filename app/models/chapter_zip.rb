@@ -2,9 +2,11 @@ class ChapterZip < ApplicationRecord
   belongs_to :book_zip
   belongs_to :source_chapter, class_name: "Chapter"
   belongs_to :target_chapter, class_name: "Chapter"
-  before_create :set_end_positions
+  before_save :set_end_positions
   before_save :build_default_zip_info, if: :zip_info_generation_required?
   serialize :zip_info, JSON
+  validates :start_position_source, :start_position_target, :position,
+    presence: true
 
 
   def id_pos_mapping
@@ -170,7 +172,8 @@ class ChapterZip < ApplicationRecord
       next_t_chapter = target_chapter
       next_t_position = end_position_target + 1
     end
-    if next_s_chapter && next_t_chapter
+    #FIXME: position should not be here
+    if next_s_chapter && next_t_chapter && position
       ChapterZip.new(
         position: position + 1,
         source_chapter: next_s_chapter,

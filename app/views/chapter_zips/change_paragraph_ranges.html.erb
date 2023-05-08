@@ -1,0 +1,53 @@
+<h2> Change paragraph ranges </h2>
+<p>
+<%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
+<%= link_to (@chapter_zip.source_chapter.title + ' - ' + @chapter_zip.target_chapter.title),
+edit_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip) %>
+</p>
+<% flash.each do |type, msg| %>
+  <div>
+    <%= msg %>
+  </div>
+<% end %>
+<%= form_with(
+  url: update_ranges_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip),
+  model: @chapter_zip,
+  method: :post,
+  data: {turbo: false}
+) do |form| %>
+  <div class="field">
+    <%= form.label :start_position_source %>
+    <%= form.number_field :start_position_source %>
+  </div>
+  <div class="field">
+    <%= form.label :end_position_source %>
+    <%= form.number_field :end_position_source %>
+  </div>
+  <div class="field">
+    <%= form.label :start_position_target %>
+    <%= form.number_field :start_position_target %>
+  </div>
+  <div class="field">
+    <%= form.label :end_position_target %>
+    <%= form.number_field :end_position_target %>
+  </div>
+  <div class="field">
+    <%= form.label :position %>
+    <%= form.number_field :position %>
+  </div>
+  <div class="actions">
+    <%= form.submit "Update paragraph ranges" %>
+  </div>
+<% end %>
+
+<table border=1>
+  <tr>
+    <th> Source </th>
+    <th> Target </th>
+  </tr>
+<%= render partial: "paragraph_match",
+  collection: @chapter_zip.paragraph_matches,
+  locals: {zip_info: @chapter_zip.zip_info}
+%>
+</table>
+

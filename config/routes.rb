@@ -12,8 +12,8 @@ Rails.application.routes.draw do
   resources :book_zips, only: [:index, :show, :destroy] do
     resources :chapter_zips, only: [:new, :create, :edit, :update, :destroy] do
       member do
-        get :edit_matching
-        post :update_matching
+        get :change_paragraph_ranges
+        post :update_ranges
       end
     end
 
