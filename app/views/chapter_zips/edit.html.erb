@@ -61,5 +61,8 @@
 
   <div class="actions">
     <%= form.submit %>
+    <% if @chapter_zip.build_next_chapter_zip.present? %>
+        <%= form.submit "Update and build next", name: "update_and_build_next" %>
+  <% end %>
   </div>
 <% end %>

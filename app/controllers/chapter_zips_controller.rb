@@ -43,8 +43,16 @@ class ChapterZipsController < ApplicationController
       @chapter_zip.zip_info["verified_connection_source_id"] = nil
       @chapter_zip.zip_info["inconsistent_connection_source_id"] = nil
       if @chapter_zip.save
-        redirect_to edit_book_zip_chapter_zip_path(
-            @chapter_zip.book_zip, @chapter_zip)
+        if params['update_and_build_next'] &&
+            @chapter_zip.build_next_chapter_zip.present?
+          redirect_to new_book_zip_chapter_zip_path(
+            @chapter_zip.book_zip,
+            prev_chapter_id: @chapter_zip.id
+          )
+        else
+          redirect_to edit_book_zip_chapter_zip_path(
+              @chapter_zip.book_zip, @chapter_zip)
+        end
       else
         flash.alert = 'Update failed!'
         render :edit
