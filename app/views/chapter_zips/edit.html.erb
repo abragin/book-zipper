@@ -1,3 +1,11 @@
+<% content_for :head do %>
+  <%= javascript_tag do %>
+    let chapterZip
+    chapterZip = <%= raw(@chapter_zip.matching_editor_data.to_json) %>
+  <% end %>
+  <%= javascript_include_tag "chapterzip-editor", defer: true %>
+<% end %>
+
 <h2> Edit chapter zip </h2>
 <p>
 <%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
@@ -34,10 +42,7 @@
     <%= form.submit data: { turbo_confirm: "Warning! Matching will be regenerated" } %>
   </div>
 <% end %>
-<%= link_to 'Edit matching',
-  edit_matching_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip),
-  data: {turbo: false}
-%>
+
 <% next_chapter_message = @chapter_zip.next_chapter_message %>
 <% if next_chapter_message %>
   <%= next_chapter_message %>
@@ -45,17 +50,31 @@
   <%= link_to 'Build next chapter',
     new_book_zip_chapter_zip_path(
       @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
-    )
+    ),
+    data: {turbo: false}
   %>
 <% end %>
 
-<table border=1>
-  <tr>
-    <th> Source </th>
-    <th> Target </th>
-  </tr>
-<%= render partial: "paragraph_match",
-  collection: @chapter_zip.paragraph_matches,
-  locals: {zip_info: @chapter_zip.zip_info}
-%>
-</table>
+<%= form_with(
+  url: update_matching_book_zip_chapter_zip_path(@chapter_zip.book_zip, @chapter_zip),
+  method: :post,
+  data: {turbo: false}
+) do |form| %>
+  <div id='chapterzip-editor'>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<%#<table border=1>%>
+  <%#<tr>%>
+    <%#<th> Source </th>%>
+    <%#<th> Target </th>%>
+  <%#</tr>%>
+<%#<%= render partial: "paragraph_match",%>
+  <%#collection: @chapter_zip.paragraph_matches,%>
+  <%#locals: {zip_info: @chapter_zip.zip_info}%>
+  <%#%>
+<%#</table>%>
