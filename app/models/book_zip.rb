@@ -8,4 +8,11 @@ class BookZip < ApplicationRecord
   def title
     "#{ebook_source.book.title} (#{ebook_source.language.name} - #{ebook_target.language.name})"
   end
+
+  def chapter_zips_with_extra_includes
+    chapter_zips.includes(
+      source_chapter: :epub_book,
+      target_chapter: :epub_book
+    )
+  end
 end

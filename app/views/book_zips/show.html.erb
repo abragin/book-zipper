@@ -5,7 +5,7 @@
 
 <p> Chapter zips:
 <ul>
-  <% @book_zip.chapter_zips.each do |chapter_zip| %>
+  <% @book_zip.chapter_zips_with_extra_includes.each do |chapter_zip| %>
     <li>
       <%= chapter_zip.position %>.
       <%= link_to (chapter_zip.source_chapter.title +
