@@ -142,48 +142,59 @@ class ChapterZip < ApplicationRecord
   end
 
   def next_chapter_message
-    if book_zip.chapter_zips.last.id != self.id
-      "Next chapter is already built."
-    elsif zip_info['verified_connection_source_id'].present?
-      "Current chapter is not verified. Use \"Edit matching\" to verify it."
-    elsif final_chapter?
-      "This is the final chapter zip!"
-    end
+    @next_chapter_message ||=
+      if zip_info['verified_connection_source_id'].present?
+        "Current chapter is not verified."
+      elsif final_chapter?
+        "This is the final chapter zip!"
+      end
   end
 
   def final_chapter?
-    next_chapter_zip.nil?
+    build_next_chapter_zip.nil?
   end
 
   def next_chapter_zip
-    if source_chapter.max_p_position == end_position_source
-      next_s_chapter = book_zip.ebook_source.chapters.where(
-        "position > ?", source_chapter.position).order(:position).first
-      next_s_position = 0
-    else
-      next_s_chapter = source_chapter
-      next_s_position = end_position_source + 1
-    end
-    if target_chapter.max_p_position == end_position_target
-      next_t_chapter = book_zip.ebook_target.chapters.where(
-        "position > ?", target_chapter.position).order(:position).first
-      next_t_position = 0
-    else
-      next_t_chapter = target_chapter
-      next_t_position = end_position_target + 1
-    end
-    #FIXME: position should not be here
-    if next_s_chapter && next_t_chapter && position
-      ChapterZip.new(
-        position: position + 1,
-        source_chapter: next_s_chapter,
-        target_chapter: next_t_chapter,
-        start_position_source: next_s_position,
-        start_position_target: next_t_position,
-        book_zip: book_zip
-      )
-    else
-      nil
+    @next_chapter_zip ||=
+      book_zip.chapter_zips.where("position > ?", position).first
+  end
+
+  def prev_chapter_zip
+    @prev_chapter_zip ||=
+      book_zip.chapter_zips.where("position < ?", position).last
+  end
+
+  def build_next_chapter_zip
+    @build_next_chapter_zip ||= begin
+      if source_chapter.max_p_position == end_position_source
+        next_s_chapter = book_zip.ebook_source.chapters.where(
+          "position > ?", source_chapter.position).order(:position).first
+        next_s_position = 0
+      else
+        next_s_chapter = source_chapter
+        next_s_position = end_position_source + 1
+      end
+      if target_chapter.max_p_position == end_position_target
+        next_t_chapter = book_zip.ebook_target.chapters.where(
+          "position > ?", target_chapter.position).order(:position).first
+        next_t_position = 0
+      else
+        next_t_chapter = target_chapter
+        next_t_position = end_position_target + 1
+      end
+      if next_s_chapter && next_t_chapter
+        pos = book_zip.chapter_zips.maximum(:position) + 1
+        ChapterZip.new(
+          position: pos,
+          source_chapter: next_s_chapter,
+          target_chapter: next_t_chapter,
+          start_position_source: next_s_position,
+          start_position_target: next_t_position,
+          book_zip: book_zip
+        )
+      else
+        nil
+      end
     end
   end
 

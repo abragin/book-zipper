@@ -6,7 +6,7 @@ class ChapterZipsController < ApplicationController
     @book_zip = BookZip.find(params[:book_zip_id])
     if params[:prev_chapter_id]
       prev_chapter = ChapterZip.find(params[:prev_chapter_id])
-      next_chapter = prev_chapter.next_chapter_zip
+      next_chapter = prev_chapter.build_next_chapter_zip
       if next_chapter && next_chapter.save
         redirect_to edit_book_zip_chapter_zip_path(
           next_chapter.book_zip, next_chapter)

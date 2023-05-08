@@ -8,6 +8,31 @@
 
 <h2> Edit chapter zip </h2>
 <p>
+<% if @chapter_zip.prev_chapter_zip %>
+  <%= link_to 'Previous chapter', edit_book_zip_chapter_zip_path(
+      @chapter_zip.book_zip, @chapter_zip.prev_chapter_zip),
+      data: {turbo: false}
+  %>
+<% end %>
+
+<% if @chapter_zip.next_chapter_zip %>
+  <%= link_to 'Next chapter', edit_book_zip_chapter_zip_path(
+      @chapter_zip.book_zip, @chapter_zip.next_chapter_zip),
+      data: {turbo: false}
+  %>
+<% elsif @chapter_zip.next_chapter_message %>
+  <%= @chapter_zip.next_chapter_message %>
+<% else %>
+  <%= link_to 'Build next chapter',
+    new_book_zip_chapter_zip_path(
+      @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
+    ),
+    data: {turbo: false}
+  %>
+<% end %>
+
+</p>
+<p>
 <%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
 <%= @chapter_zip.source_chapter.title + ' - ' + @chapter_zip.target_chapter.title%>
 </p>
@@ -19,22 +44,10 @@
 
 <%= link_to 'Change paragraph ranges',
   change_paragraph_ranges_book_zip_chapter_zip_path(
-    @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
+    @chapter_zip.book_zip, @chapter_zip
   ),
   data: {turbo: false}
 %>
-
-<% next_chapter_message = @chapter_zip.next_chapter_message %>
-<% if next_chapter_message %>
-  <%= next_chapter_message %>
-<% else %>
-  <%= link_to 'Build next chapter',
-    new_book_zip_chapter_zip_path(
-      @chapter_zip.book_zip, prev_chapter_id: @chapter_zip.id
-    ),
-    data: {turbo: false}
-  %>
-<% end %>
 
 <%= form_with(
   model: [@chapter_zip.book_zip, @chapter_zip], data: {turbo: false}
