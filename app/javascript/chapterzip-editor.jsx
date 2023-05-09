@@ -84,7 +84,9 @@ class ParagraphZipStatus extends React.Component{
     </button>
     const rematchBelowBTN = <button
        key="rematchBelowBTN"
+       id="rematch-below"
        name="rematch_from_here"
+       title="Re-match from here"
        onClick={() => this.props.handleRematchBelow(this.props.idx)}>
        VVV
     </button>
@@ -278,6 +280,15 @@ class ChapterZip extends React.Component{
       this.buildNewParagraphZip(sId, tId)
     }
   }
+
+  componentDidMount() {
+    const element = document.getElementById('rematch-below');
+    const yOffset = -200;
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({top: y});
+    };
+  };
 
   render(){
     const pzs = this.buildParagraphs(this.state.connections).map(

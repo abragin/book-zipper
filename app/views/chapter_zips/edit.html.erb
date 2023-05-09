@@ -8,6 +8,11 @@
 
 <h2> Edit chapter zip </h2>
 <p>
+<%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
+<%= @chapter_zip.source_chapter.title + ' - ' + @chapter_zip.target_chapter.title%>
+</p>
+
+<p>
 <% if @chapter_zip.prev_chapter_zip %>
   <%= link_to 'Previous chapter', edit_book_zip_chapter_zip_path(
       @chapter_zip.book_zip, @chapter_zip.prev_chapter_zip),
@@ -32,15 +37,6 @@
 <% end %>
 
 </p>
-<p>
-<%= link_to @chapter_zip.book_zip.title, book_zip_path(@chapter_zip.book_zip) %> /
-<%= @chapter_zip.source_chapter.title + ' - ' + @chapter_zip.target_chapter.title%>
-</p>
-<% flash.each do |type, msg| %>
-  <div>
-    <%= msg %>
-  </div>
-<% end %>
 
 <%= link_to 'Change paragraph ranges',
   change_paragraph_ranges_book_zip_chapter_zip_path(
@@ -48,6 +44,12 @@
   ),
   data: {turbo: false}
 %>
+
+<% flash.each do |type, msg| %>
+  <div>
+    <%= msg %>
+  </div>
+<% end %>
 
 <%= form_with(
   model: [@chapter_zip.book_zip, @chapter_zip], data: {turbo: false}
@@ -61,7 +63,7 @@
 
   <div class="actions">
     <%= form.submit %>
-    <% if @chapter_zip.build_next_chapter_zip.present? %>
+    <% if @chapter_zip.build_next_chapter_zip.present? && @chapter_zip.next_chapter_zip.nil? %>
         <%= form.submit "Update and build next", name: "update_and_build_next" %>
   <% end %>
   </div>
