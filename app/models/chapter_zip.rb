@@ -84,9 +84,14 @@ class ChapterZip < ApplicationRecord
       [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
     end
     self.zip_info["matches"] = verified_matches + new_matches
-    if response["first_inconsistent_connection"]
-      self.zip_info["inconsistent_connection_source_id"] = new_matches[
-        response["first_inconsistent_connection"]][0]
+    if f_i_c = response["first_inconsistent_connection"]
+      if  f_i_c == -1
+        self.zip_info["inconsistent_connection_source_id"] =
+          verified_matches[-1][0]
+      else
+        self.zip_info["inconsistent_connection_source_id"] =
+          new_matches[f_i_c][0]
+      end
     end
   end
 
