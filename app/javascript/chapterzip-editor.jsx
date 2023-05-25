@@ -32,7 +32,11 @@ const chapterZipDebug = {
 class Paragraph extends React.Component{
  render(){
    const cssClasses = (this.props.selected === this.props.index) ? "paragraph selected" : "paragraph"
-   const selectBTN = (this.props.index > 0) ? (
+   const addMergePrevBTN = ((this.props.offset === 0) &&
+     (this.props.index > 0) &&
+     (this.props.src === "source")
+   )
+   const selectBTN = (this.props.index > 0 && !this.props.skipped) ? (
      <button
        key="selectBTN"
        type="button"
@@ -40,15 +44,15 @@ class Paragraph extends React.Component{
        {(this.props.selected === this.props.index) ? "-" : "+"}
      </button>
    ) : null;
-   const skipBTN = (
+   const skipBTN = (this.props.offset > 0) ? (
      <button
        key="skipBTN"
        type="button"
        onClick={() => this.props.handleParagraphSkip(this.props.index, this.props.src)}>
        {this.props.skipped ? "Unskip" : "Skip"}
      </button>
-   )
-   const mergePrevBTN = this.props.addMergePrevBTN ? (
+   ) : null;
+   const mergePrevBTN = addMergePrevBTN ? (
      <button
        key="mergeBTN"
        type="button"
@@ -116,10 +120,10 @@ class ParagraphZip extends React.Component{
         handleClick={this.props.handleClick}
         handleParagraphUnion={this.props.handleParagraphUnion}
         handleParagraphSkip={this.props.handleParagraphSkip}
-        addMergePrevBTN={(i === 0) && (sInd > 0)}
+        offset={i}
         skipped={this.props.skippedSource.has(sInd)}
       />))
-    const ps_target = range(this.props.paragraphZip.targetIds).map((tInd, _) => (
+    const ps_target = range(this.props.paragraphZip.targetIds).map((tInd, i) => (
       <Paragraph
         index={tInd}
         key={tInd}
@@ -129,7 +133,7 @@ class ParagraphZip extends React.Component{
         handleClick={this.props.handleClick}
         handleParagraphUnion={this.props.handleParagraphUnion}
         handleParagraphSkip={this.props.handleParagraphSkip}
-        addMergePrevBTN={false}
+        offset={i}
         skipped={this.props.skippedTarget.has(tInd)}
       />))
     const pz_status = (<ParagraphZipStatus
@@ -325,8 +329,8 @@ class ChapterZip extends React.Component{
          <thead>
            <tr>
             <th> Status </th>
-            <th> Source </th>
-            <th> Target </th>
+            <th className="sourceTarget"> Source </th>
+            <th className="sourceTarget"> Target </th>
           </tr>
         </thead>
           <tbody>
