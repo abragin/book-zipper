@@ -32,10 +32,6 @@ const chapterZipDebug = {
 class Paragraph extends React.Component{
  render(){
    const cssClasses = (this.props.selected === this.props.index) ? "paragraph selected" : "paragraph"
-   const addMergePrevBTN = ((this.props.offset === 0) &&
-     (this.props.index > 0) &&
-     (this.props.src === "source")
-   )
    const selectBTN = (this.props.index > 0 && !this.props.skipped) ? (
      <button
        key="selectBTN"
@@ -52,15 +48,7 @@ class Paragraph extends React.Component{
        {this.props.skipped ? "Unskip" : "Skip"}
      </button>
    ) : null;
-   const mergePrevBTN = addMergePrevBTN ? (
-     <button
-       key="mergeBTN"
-       type="button"
-       onClick={() => this.props.handleParagraphUnion(this.props.index, this.props.src)}>
-       ^ </button>
-   ) : null;
    const buttons = (<div className={this.props.src==="source" ? "selectBtnSrc" : "selectBtnTgt"}>
-       {mergePrevBTN}
        {this.props.src==="source" ? [skipBTN, selectBTN] : [selectBTN, skipBTN]}
        </div>);
    return (<div className={cssClasses} >
@@ -99,8 +87,16 @@ class ParagraphZipStatus extends React.Component{
     const tdClass = verified ? "paragraphStatusVerified" : (
       consistent ? "paragraphStatusUnverified" : "paragraphStatusInconsistent"
     );
+    const mergePrevBTN = (this.props.sourceIndex > 0) ? (
+      <button
+        key="mergeBTN"
+        type="button"
+        onClick={() => this.props.handleParagraphUnion(this.props.sourceIndex)}>
+        Remove connection </button>
+    ) : null;
 
     return (<td className={tdClass}>
+            {mergePrevBTN}
             {changeVerifiedBTN}
         {showRematchBtn ? rematchBelowBTN : null}
         </td>
@@ -118,7 +114,6 @@ class ParagraphZip extends React.Component{
         selected={this.props.selectedSource}
         src='source'
         handleClick={this.props.handleClick}
-        handleParagraphUnion={this.props.handleParagraphUnion}
         handleParagraphSkip={this.props.handleParagraphSkip}
         offset={i}
         skipped={this.props.skippedSource.has(sInd)}
@@ -131,7 +126,6 @@ class ParagraphZip extends React.Component{
         selected={this.props.selectedTarget}
         src='target'
         handleClick={this.props.handleClick}
-        handleParagraphUnion={this.props.handleParagraphUnion}
         handleParagraphSkip={this.props.handleParagraphSkip}
         offset={i}
         skipped={this.props.skippedTarget.has(tInd)}
@@ -141,8 +135,10 @@ class ParagraphZip extends React.Component{
                         verifiedConnectionSourceId={this.props.verifiedConnectionSourceId}
                         inconsistentConnectionSourceId={this.props.inconsistentConnectionSourceId}
                         idx={this.props.idx}
+                        sourceIndex={this.props.paragraphZip.sourceIds[0]}
                         handleChangeVerified={this.props.handleChangeVerified}
                         handleRematchBelow={this.props.handleRematchBelow}
+                        handleParagraphUnion={this.props.handleParagraphUnion}
                         />
                       )
     const nSourceParagraphs = range(this.props.paragraphZip.sourceIds).filter(
@@ -154,10 +150,11 @@ class ParagraphZip extends React.Component{
     const sourcePClasses = (nSourceParagraphs < 2 ) ? "paragraphs" : "paragraphs multipleParagraphs";
     const targetPClasses = (nTargetParagraphs < 2 ) ? "paragraphs" : "paragraphs multipleParagraphs";
     return (<tr>
-          {pz_status}
         <td className={sourcePClasses}>
           {ps_source}
-        </td><td className={targetPClasses}>
+        </td>
+          {pz_status}
+        <td className={targetPClasses}>
           {ps_target}
         </td></tr>)
     };
@@ -328,8 +325,8 @@ class ChapterZip extends React.Component{
         <table border={1}>
          <thead>
            <tr>
-            <th> Status </th>
             <th className="sourceTarget"> Source </th>
+            <th> Status </th>
             <th className="sourceTarget"> Target </th>
           </tr>
         </thead>
