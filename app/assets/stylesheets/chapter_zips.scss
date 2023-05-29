@@ -50,3 +50,28 @@ td.multipleParagraphs {
 th.sourceTarget {
   width: 48%;
 }
+
+td.status {
+  border-top-style: solid;
+  border-top-width: 10px;
+  border-bottom-style: solid;
+  border-bottom-width: 10px;
+  padding: 5px;
+  vertical-align: top;
+}
+
+td.topGreen {
+  border-top-color: green;
+}
+
+td.topYellow {
+  border-top-color: yellow;
+}
+
+td.bottomGreen {
+  border-bottom-color: green;
+}
+
+td.bottomYellow {
+  border-bottom-color: yellow;
+}

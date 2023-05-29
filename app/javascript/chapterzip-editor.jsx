@@ -25,8 +25,9 @@ const chapterZipDebug = {
   connections: [[0,0], [2,1], [4,2]],
   skippedSource: [1],
   skippedTarget: [],
-  verifiedConnectionSourceId: 2,
-  inconsistentConnectionSourceId: 4,
+  unverifiedConnectionSourceIds: [2,4],
+  verifiedPMCursorSourceId: 0,
+  //inconsistentConnectionSourceId: 4,
 }
 
 class Paragraph extends React.Component{
@@ -62,8 +63,8 @@ class Paragraph extends React.Component{
 
 class ParagraphZipStatus extends React.Component{
   render(){
-    const verified = this.props.sourceParagraphId < this.props.verifiedConnectionSourceId
-    const consistent = this.props.sourceParagraphId < this.props.inconsistentConnectionSourceId
+    const verified = this.props.sourceParagraphId < this.props.verifiedPMCursorSourceId
+    //const consistent = this.props.sourceParagraphId < this.props.inconsistentConnectionSourceId
     const moveVerifiedDownBTN = <button
        key="verifyDownBTN"
        onClick={() => this.props.handleChangeVerified(this.props.idx+1)}>
@@ -82,11 +83,9 @@ class ParagraphZipStatus extends React.Component{
        onClick={() => this.props.handleRematchBelow(this.props.idx)}>
        VVV
     </button>
-    const showRematchBtn = this.props.sourceParagraphId === this.props.verifiedConnectionSourceId;
+    const showRematchBtn = this.props.sourceParagraphId === this.props.verifiedPMCursorSourceId;
     const changeVerifiedBTN = verified ? moveVerifiedUpBTN : moveVerifiedDownBTN;
-    const tdClass = verified ? "paragraphStatusVerified" : (
-      consistent ? "paragraphStatusUnverified" : "paragraphStatusInconsistent"
-    );
+    const tdClass = verified ? "paragraphStatusVerified" : "paragraphStatusUnverified";
     const mergePrevBTN = (this.props.sourceIndex > 0) ? (
       <button
         key="mergeBTN"
@@ -94,13 +93,15 @@ class ParagraphZipStatus extends React.Component{
         onClick={() => this.props.handleParagraphUnion(this.props.sourceIndex)}>
         Remove connection </button>
     ) : null;
+    const topCol = this.props.connectionVerified ? "topGreen" : "topYellow"
+    const bottomCol = this.props.nextConnectionVerified ? "bottomGreen" : "bottomYellow"
 
-    return (<td className={tdClass}>
-            {mergePrevBTN}
-            {changeVerifiedBTN}
-        {showRematchBtn ? rematchBelowBTN : null}
-        </td>
-           )
+    return (<td className={"status " + topCol + " " + bottomCol + " " + tdClass}>
+              {mergePrevBTN}
+              {changeVerifiedBTN}
+              {showRematchBtn ? rematchBelowBTN : null}
+            </td>
+               )
   }
 }
 
@@ -132,10 +133,12 @@ class ParagraphZip extends React.Component{
       />))
     const pz_status = (<ParagraphZipStatus
                         sourceParagraphId={this.props.paragraphZip.sourceIds[0]}
-                        verifiedConnectionSourceId={this.props.verifiedConnectionSourceId}
-                        inconsistentConnectionSourceId={this.props.inconsistentConnectionSourceId}
+                        verifiedPMCursorSourceId={this.props.verifiedPMCursorSourceId}
+                        //inconsistentConnectionSourceId={this.props.inconsistentConnectionSourceId}
                         idx={this.props.idx}
                         sourceIndex={this.props.paragraphZip.sourceIds[0]}
+                        connectionVerified={this.props.connectionVerified}
+                        nextConnectionVerified={this.props.nextConnectionVerified}
                         handleChangeVerified={this.props.handleChangeVerified}
                         handleRematchBelow={this.props.handleRematchBelow}
                         handleParagraphUnion={this.props.handleParagraphUnion}
@@ -165,7 +168,8 @@ class ChapterZip extends React.Component{
     super(props);
     this.state = {
       connections: props.chapterZip.connections,
-      verifiedConnectionSourceId: props.chapterZip.verifiedConnectionSourceId,
+      verifiedPMCursorSourceId: props.chapterZip.verifiedPMCursorSourceId,
+      unverifiedConnectionSourceIds: new Set(props.chapterZip.unverifiedConnectionSourceIds),
       skippedSource: new Set(props.chapterZip.skippedSource),
       skippedTarget: new Set(props.chapterZip.skippedTarget),
       selectedSource: null,
@@ -183,7 +187,9 @@ class ChapterZip extends React.Component{
       skippedSource: Array.from(this.state.skippedSource),
       skippedTarget: Array.from(this.state.skippedTarget),
       connections: this.state.connections,
-      verifiedConnectionSourceId: this.state.verifiedConnectionSourceId,
+      verifiedPMCursorSourceId: this.state.verifiedPMCursorSourceId,
+      unverifiedConnectionSourceIds: Array.from(
+        this.state.unverifiedConnectionSourceIds)
     })
   }
 
@@ -193,11 +199,11 @@ class ChapterZip extends React.Component{
       this.state.connections[pmId][0] :
       this.props.chapterZip.paragraphsSource.length
     )
-    this.setState({verifiedConnectionSourceId: newVerified})
+    this.setState({verifiedPMCursorSourceId: newVerified})
   }
 
   handleRematchBelow(pmId){
-    console.log("Re-match bellow call:", pmId)
+    //console.log("Re-match bellow call:", pmId)
   }
 
   handleParagraphSkip(idx, src){
@@ -236,22 +242,30 @@ class ChapterZip extends React.Component{
 
   handleParagraphUnion(sInd) {
     const newConnections = this.state.connections.filter((c) => c[0] !== sInd);
-    const newVerified = this.state.connections.filter((c) => c[0] < sInd).pop()[0];
+    const newUnverifiedConnectionSourceIds = this.state.unverifiedConnectionSourceIds
+    newUnverifiedConnectionSourceIds.delete(sInd)
 
     this.setState({
       connections: newConnections,
-      verifiedConnectionSourceId: newVerified,
+      unverifiedConnectionSourceIds: newUnverifiedConnectionSourceIds
     });
   }
 
   buildNewParagraphZip(sInd, tInd){
     const connectionsBefore = [];
     const connectionsAfter = [];
+    const unverifiedConnections = [];
     this.state.connections.forEach((c) => {
       if ((c[0] < sInd) && (c[1] < tInd)) {
         connectionsBefore.push(c)
+        if (this.state.unverifiedConnectionSourceIds.has(c[0])) {
+          unverifiedConnections.push(c[0])
+        }
       } else if ((c[0] > sInd) && (c[1] > tInd)) {
         connectionsAfter.push(c)
+        if (this.state.unverifiedConnectionSourceIds.has(c[0])) {
+          unverifiedConnections.push(c[0])
+        }
       }
     });
     const newConnections = connectionsBefore.concat(
@@ -260,7 +274,7 @@ class ChapterZip extends React.Component{
     );
     this.setState({
       connections: newConnections,
-      verifiedConnectionSourceId: sInd,
+      unverifiedConnectionSourceIds: new Set(unverifiedConnections),
       selectedSource: null,
       selectedTarget: null,
     });
@@ -291,6 +305,16 @@ class ChapterZip extends React.Component{
     };
   };
 
+  checkConnectionVerified(idx){
+    const con = this.state.connections[idx]
+    const aboveCursor = con ? con[0] <= this.state.verifiedPMCursorSourceId : false
+    return (con ?
+      (aboveCursor || !this.state.unverifiedConnectionSourceIds.has(con[0])
+      ) :
+      true
+    )
+  }
+
   render(){
     const pzs = this.buildParagraphs(this.state.connections).map(
       (pz, idx) => (<ParagraphZip
@@ -308,9 +332,10 @@ class ChapterZip extends React.Component{
                       handleParagraphSkip={this.handleParagraphSkip}
                       skippedSource={this.state.skippedSource}
                       skippedTarget={this.state.skippedTarget}
-                      verifiedConnectionSourceId={this.state.verifiedConnectionSourceId}
-                      inconsistentConnectionSourceId={this.props.chapterZip.inconsistentConnectionSourceId}
-
+                      verifiedPMCursorSourceId={this.state.verifiedPMCursorSourceId}
+                      //inconsistentConnectionSourceId={this.props.chapterZip.inconsistentConnectionSourceId}
+                      connectionVerified={this.checkConnectionVerified(idx)}
+                      nextConnectionVerified={this.checkConnectionVerified(idx+1)}
                       handleChangeVerified={this.handleChangeVerified}
                       handleRematchBelow={this.handleRematchBelow}
                       />));

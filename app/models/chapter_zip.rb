@@ -18,14 +18,16 @@ class ChapterZip < ApplicationRecord
 
   def matching_data=(m_data)
     matching = JSON.parse(m_data)
-    vcsp = source_ps[matching['verifiedConnectionSourceId']]
+    vcsp = source_ps[matching['verifiedPMCursorSourceId']]
     self.zip_info = {
       ignored_source_ids: matching['skippedSource'].map{|i| source_ps[i].id},
       ignored_target_ids: matching['skippedTarget'].map{|i| target_ps[i].id},
       matches: matching['connections'].map do |c|
         [source_ps[c[0]].id, target_ps[c[1]].id]
       end,
-      verified_connection_source_id: vcsp && vcsp.id
+      verified_connection_source_id: vcsp && vcsp.id,
+      unverified_connection_source_ids: matching[
+        'unverifiedConnectionSourceIds'].map{|i| source_ps[i].id}
     }
   end
 
@@ -33,6 +35,10 @@ class ChapterZip < ApplicationRecord
     rel_matches = zip_info['matches'].map do |m|
       [id_pos_mapping[:source][m[0]], id_pos_mapping[:target][m[1]]]
     end
+    unverified_connections =
+      (zip_info['unverified_connection_source_ids'] || []).map{ |ucsid|
+        id_pos_mapping[:source][ucsid]
+    }
     s_ids = source_ps.map(&:id)
     t_ids = target_ps.map(&:id)
     vcsi = if zip_info["verified_connection_source_id"]
@@ -40,11 +46,11 @@ class ChapterZip < ApplicationRecord
            else
              s_ids.length
            end
-    icsi = if zip_info["inconsistent_connection_source_id"]
-             s_ids.index(zip_info["inconsistent_connection_source_id"])
-           else
-             s_ids.length
-           end
+    #icsi = if zip_info["inconsistent_connection_source_id"]
+             #s_ids.index(zip_info["inconsistent_connection_source_id"])
+           #else
+             #s_ids.length
+           #end
     {
       'paragraphsSource' => source_ps.map{|p| {id: p.id, content: p.content}},
       'paragraphsTarget' => target_ps.map{|p| {id: p.id, content: p.content}},
@@ -53,8 +59,9 @@ class ChapterZip < ApplicationRecord
       'skippedTarget' => zip_info['ignored_target_ids'].map{
         |iid| t_ids.index(iid)},
       'connections' => rel_matches,
-      "verifiedConnectionSourceId" => vcsi,
-      "inconsistentConnectionSourceId" => icsi
+      "verifiedPMCursorSourceId" => vcsi,
+      "unverifiedConnectionSourceIds" => unverified_connections
+      #"inconsistentConnectionSourceId" => icsi
 
     }
   end
@@ -83,16 +90,18 @@ class ChapterZip < ApplicationRecord
     new_matches = response["connections"].map do |c|
       [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
     end
+    unverified_connections = new_matches.map {|m| m[0]}
     self.zip_info["matches"] = verified_matches + new_matches
-    if f_i_c = response["first_inconsistent_connection"]
-      if  f_i_c == -1
-        self.zip_info["inconsistent_connection_source_id"] =
-          verified_matches[-1][0]
-      else
-        self.zip_info["inconsistent_connection_source_id"] =
-          new_matches[f_i_c][0]
-      end
-    end
+    self.zip_info["unverified_connection_source_ids"] = unverified_connections
+    #if f_i_c = response["first_inconsistent_connection"]
+      #if  f_i_c == -1
+        #self.zip_info["inconsistent_connection_source_id"] =
+          #verified_matches[-1][0]
+      #else
+        #self.zip_info["inconsistent_connection_source_id"] =
+          #new_matches[f_i_c][0]
+      #end
+    #end
   end
 
   def rebuild_zip_info_fallback(verified_matches, source_ps_unmatched,
@@ -105,6 +114,7 @@ class ChapterZip < ApplicationRecord
     target_starts = merge_points_to_pz_starts(target_ps_unmatched, target_idx)
     self.zip_info["matches"] = verified_matches +
       source_starts.zip(target_starts)[1..]
+    self.zip_info["unverified_connection_source_ids"] = source_starts
   end
 
   def rebuild_zip_info
@@ -135,7 +145,8 @@ class ChapterZip < ApplicationRecord
       "matches" => [[source_ps[0].id, target_ps[0].id]],
       "ignored_source_ids" => [],
       "ignored_target_ids" => [],
-      "verified_connection_source_id" => source_ps[0].id
+      "verified_connection_source_id" => source_ps[0].id,
+      "unverified_connection_source_ids" => []
     }
     rebuild_zip_info
   end

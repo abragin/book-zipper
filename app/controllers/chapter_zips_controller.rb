@@ -43,6 +43,7 @@ class ChapterZipsController < ApplicationController
     else
       @chapter_zip.zip_info["verified_connection_source_id"] = nil
       @chapter_zip.zip_info["inconsistent_connection_source_id"] = nil
+      @chapter_zip.zip_info["unverified_connection_source_ids"] = []
       if @chapter_zip.save
         if params['update_and_build_next'] &&
             @chapter_zip.build_next_chapter_zip.present?

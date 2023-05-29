@@ -17,7 +17,11 @@ class ChapterZipTest < ActiveSupport::TestCase
         paragraphs(:another_one_sentence_paragraph).id,
       ]],
       "ignored_source_ids" => [], "ignored_target_ids" => [],
-      "verified_connection_source_id" => paragraphs(:nine_sentence_paragraph).id
+      "verified_connection_source_id" => paragraphs(:nine_sentence_paragraph).id,
+      "unverified_connection_source_ids" => [
+        paragraphs(:nine_sentence_paragraph).id,
+        paragraphs(:one_sentence_paragraph_again).id
+      ]
     }
     cz.build_default_zip_info
     assert_equal expected_zi, cz.zip_info
