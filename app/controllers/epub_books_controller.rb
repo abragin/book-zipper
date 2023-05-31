@@ -63,6 +63,10 @@ class EpubBooksController < ApplicationController
       @epub_book.paragraphs.where(
         'paragraphs.id IN (?)', p[:ignored_paragraphs_ids]
       ).update_all(ignore: true)
+      @epub_book.paragraphs.where(
+        'paragraphs.id IN (?) and paragraphs.id NOT IN (?)',
+        p[:current_paragraphs_ids], p[:ignored_paragraphs_ids]
+      ).update_all(ignore: false)
     end
     redirect_back(fallback_location: root_path)
   end
