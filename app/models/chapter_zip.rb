@@ -46,11 +46,6 @@ class ChapterZip < ApplicationRecord
            else
              s_ids.length
            end
-    #icsi = if zip_info["inconsistent_connection_source_id"]
-             #s_ids.index(zip_info["inconsistent_connection_source_id"])
-           #else
-             #s_ids.length
-           #end
     {
       'paragraphsSource' => source_ps.map{|p| {id: p.id, content: p.content}},
       'paragraphsTarget' => target_ps.map{|p| {id: p.id, content: p.content}},
@@ -61,7 +56,6 @@ class ChapterZip < ApplicationRecord
       'connections' => rel_matches,
       "verifiedPMCursorSourceId" => vcsi,
       "unverifiedConnectionSourceIds" => unverified_connections
-      #"inconsistentConnectionSourceId" => icsi
 
     }
   end
@@ -76,7 +70,7 @@ class ChapterZip < ApplicationRecord
     end
   end
 
-  def rebuild_zip_info_external(verified_matches, source_ps_unmatched, target_ps_unmatched)
+  def rebuild_zip_info_external(source_ps_unmatched, target_ps_unmatched)
     body = {
       source_ps: source_ps_unmatched.map(&:content),
       target_ps: target_ps_unmatched.map(&:content)
@@ -91,20 +85,13 @@ class ChapterZip < ApplicationRecord
       [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
     end
     unverified_connections = new_matches.map {|m| m[0]}
-    self.zip_info["matches"] = verified_matches + new_matches
-    self.zip_info["unverified_connection_source_ids"] = unverified_connections
-    #if f_i_c = response["first_inconsistent_connection"]
-      #if  f_i_c == -1
-        #self.zip_info["inconsistent_connection_source_id"] =
-          #verified_matches[-1][0]
-      #else
-        #self.zip_info["inconsistent_connection_source_id"] =
-          #new_matches[f_i_c][0]
-      #end
-    #end
+    return {
+      new_matches: new_matches,
+      unverified_connections: unverified_connections
+    }
   end
 
-  def rebuild_zip_info_fallback(verified_matches, source_ps_unmatched,
+  def rebuild_zip_info_fallback(source_ps_unmatched,
                                 target_ps_unmatched)
     source_weights = get_weights(source_ps_unmatched)
     target_weights = get_weights(target_ps_unmatched)
@@ -112,32 +99,52 @@ class ChapterZip < ApplicationRecord
     source_idx, target_idx = zipper.get_merge_idx
     source_starts = merge_points_to_pz_starts(source_ps_unmatched, source_idx)
     target_starts = merge_points_to_pz_starts(target_ps_unmatched, target_idx)
-    self.zip_info["matches"] = verified_matches +
-      source_starts.zip(target_starts)[1..]
-    self.zip_info["unverified_connection_source_ids"] = source_starts
+    return {
+      new_matches: source_starts.zip(target_starts)[1..],
+      unverified_connections: source_starts[1..]
+    }
+
   end
 
   def rebuild_zip_info
     verified_match_idx = zip_info["matches"].find_index do |m|
       m[0] == zip_info["verified_connection_source_id"]
     end
-    verified_matches = zip_info["matches"][..verified_match_idx]
-    verified_match = verified_matches[-1]
-    source_idx = source_ps.find_index{|p| p.id == verified_match[0]}
-    target_idx = target_ps.find_index{|p| p.id == verified_match[1]}
-    source_ps_unmatched = source_ps[source_idx..].filter do |p|
-      zip_info["ignored_source_ids"].exclude? p.id
+    new_matches = zip_info["matches"][..verified_match_idx]
+    first_verified_match = new_matches[-1]
+    unverified_c_s_i = []
+    verified_matches = [first_verified_match]
+    verified_matches += zip_info["matches"][verified_match_idx+1..].filter do |m|
+      zip_info["unverified_connection_source_ids"].exclude?(m[0])
     end
-    target_ps_unmatched = target_ps[target_idx..].filter do |p|
-      zip_info["ignored_target_ids"].exclude? p.id
+
+    verified_matches.zip(verified_matches[1..]).each do |vm, vm_next|
+      source_idx_start = source_ps.find_index{|p| p.id == vm[0]}
+      target_idx_start = target_ps.find_index{|p| p.id == vm[1]}
+      if vm_next
+        source_idx_end = source_ps.find_index{|p| p.id == vm_next[0]}
+        target_idx_end = target_ps.find_index{|p| p.id == vm_next[1]}
+      else
+        source_idx_end = source_ps.length
+        target_idx_end = target_ps.length
+      end
+      source_ps_unmatched = source_ps[source_idx_start...source_idx_end].filter do |p|
+        zip_info["ignored_source_ids"].exclude? p.id
+      end
+      target_ps_unmatched = target_ps[target_idx_start...target_idx_end].filter do |p|
+        zip_info["ignored_target_ids"].exclude? p.id
+      end
+      if Rails.configuration.chapter_matcher_ms[:enabled]
+        res = rebuild_zip_info_external(source_ps_unmatched, target_ps_unmatched)
+      else
+        res = rebuild_zip_info_fallback(source_ps_unmatched, target_ps_unmatched)
+      end
+      new_matches += res[:new_matches]
+      new_matches.append(vm_next) if vm_next
+      unverified_c_s_i += res[:unverified_connections]
     end
-    if Rails.configuration.chapter_matcher_ms[:enabled]
-      rebuild_zip_info_external(verified_matches, source_ps_unmatched,
-                                target_ps_unmatched)
-    else
-      rebuild_zip_info_fallback(verified_matches, source_ps_unmatched,
-                                target_ps_unmatched)
-    end
+    zip_info['matches'] = new_matches
+    zip_info['unverified_connection_source_ids'] = unverified_c_s_i
   end
 
   def build_default_zip_info

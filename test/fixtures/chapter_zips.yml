@@ -5,13 +5,13 @@ one:
   position: 1
   source_chapter: one
   target_chapter: two
-  end_position_source: 3
-  end_position_target: 2
+  end_position_source: 5
+  end_position_target: 4
 
 chapter_two:
   book_zip: bookzipone
   position: 2
   source_chapter: two
   target_chapter: one
-  end_position_source: 2
-  end_position_target: 3
+  end_position_source: 4
+  end_position_target: 5

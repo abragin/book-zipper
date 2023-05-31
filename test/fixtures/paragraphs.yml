@@ -24,3 +24,23 @@ one_sentence_paragraph_again:
   position: 3
   content: <%= "one sentence paragraph." %>
   chapter: one
+
+five_sentence_paragraph_c1:
+  position: 4
+  content: <%= "five sentence paragraph. " * 5 %>
+  chapter: one
+
+five_sentence_paragraph_c2:
+  position: 3
+  content: <%= "five sentence paragraph. " * 5 %>
+  chapter: two
+
+one_sentence_paragraph_c1:
+  position: 5
+  content: <%= "One sentence paragraph. " %>
+  chapter: one
+
+one_sentence_paragraph_c2:
+  position: 4
+  content: <%= "one sentence paragraph. " %>
+  chapter: two
