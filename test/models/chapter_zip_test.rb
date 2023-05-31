@@ -112,7 +112,7 @@ class ChapterZipTest < ActiveSupport::TestCase
       "ignored_target_ids" => [],
       "verified_connection_source_id" => paragraphs(
         :nine_sentence_paragraph).id,
-      "unverified_connection_source_ids" => [paragraphs(:one_sentence_paragraph_again).id]
+      "unverified_connection_source_ids" => [paragraphs(:one_sentence_paragraph).id]
     }
     cz.rebuild_zip_info
     assert_equal matches, cz.zip_info['matches']
