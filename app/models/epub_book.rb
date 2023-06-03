@@ -1,6 +1,7 @@
 class EpubBook < ApplicationRecord
   # TODO add parsing options validation
   serialize :title_tags, Array
+  serialize :title_xpaths, Array
   has_many :epub_items,
     -> { order('position') },
     dependent: :destroy
@@ -77,6 +78,14 @@ class EpubBook < ApplicationRecord
 
   def title_tags_text
     title_tags.join(';')
+  end
+
+  def title_xpaths_text=(v)
+    self.title_xpaths = v.split(';')
+  end
+
+  def title_xpaths_text
+    title_xpaths.join(';')
   end
 
   def store_structured

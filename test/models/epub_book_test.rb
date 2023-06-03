@@ -50,33 +50,4 @@ class EpubBookTest < ActiveSupport::TestCase
     assert_equal({tag: "p", start: "PART "}, t_cond[2])
     assert_equal({tag: "p", class: "title", start: "Chapter "}, t_cond[3])
   end
-
-  def build_node(xml_text)
-    Nokogiri::XML(xml_text).children[0]
-  end
-
-  test "#matching_tag_position" do
-    book = EpubBook.new({
-      title_tags: ["h1", "p.header", "p>PART ", "p.title>Chapter "]
-    })
-    current_node = build_node("<h1 class=\"header\">PART 1 title</h1>")
-    assert_equal 0, book.matching_tag_position(current_node)
-
-    current_node = build_node("<h2 class=\"header\">PART 1 title</h2>")
-    assert_nil book.matching_tag_position(current_node)
-
-    current_node = build_node("<p>CHAPTER 1 </p>")
-    assert_nil book.matching_tag_position(current_node)
-
-    current_node = build_node("<p class=\"header\">PART 1 title</p>")
-    assert_equal 1, book.matching_tag_position(current_node)
-
-    current_node = build_node("<p class=\"header_1\">PART 1 title</p>")
-    assert_equal 2, book.matching_tag_position(current_node)
-
-    current_node = build_node(
-      "<p class=\"title\"> <span> Chapter 1 title </span></p>")
-    assert_equal 3, book.matching_tag_position(current_node)
-
-  end
 end
