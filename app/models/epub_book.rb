@@ -77,7 +77,9 @@ class EpubBook < ApplicationRecord
         t_ps[1].each_with_index do |par_content, i1|
           c.paragraphs.build(position: i1, content: par_content, chapter: c)
         end
-        c.save
+        if c.paragraphs.present?
+          c.save
+        end
       end
     end
   end
