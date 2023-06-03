@@ -6,7 +6,7 @@ testepubbook:
   filename: 'testbook.epub'
   content_location: 'div'
   title_xpaths: ['h1','h2','h3']
-  content_tag: 'p'
+  content_xpath: 'p'
   excluded_content_tag: 'a'
   start_position: 0
   end_position: 4
@@ -17,7 +17,7 @@ nodivandabook:
   language: eng
   content_location: ''
   title_xpaths: ['h3']
-  content_tag: 'p'
+  content_xpath: 'p'
   excluded_content_tag: ''
   start_position: 0
   end_position: 0

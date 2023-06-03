@@ -36,7 +36,7 @@ class EpubItemTest < ActiveSupport::TestCase
 
   test "#parse_content with complex title" do
     book = EpubBook.new({
-      content_tag: "p",
+      content_xpath: "p",
       title_xpaths: [
         "h1", "p[@class='header']",
         "p[descendant-or-self::*/text()[starts-with(normalize-space(), 'PART')]]",

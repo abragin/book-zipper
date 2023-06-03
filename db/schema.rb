@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_03_131029) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_03_131852) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -68,7 +68,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_131029) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "content_location"
-    t.string "content_tag"
+    t.string "content_xpath"
     t.string "excluded_content_tag"
     t.integer "start_position"
     t.integer "end_position"

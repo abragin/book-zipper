@@ -32,7 +32,7 @@ XSL
       doc.xpath(txp)
     end
     title_and_content_xpath =
-      (epub_book.title_xpaths + [epub_book.content_tag]).join('|')
+      (epub_book.title_xpaths + [epub_book.content_xpath]).join('|')
 
     doc.xpath(title_and_content_xpath).each do |c|
       content_present = current_content[-1][1].present?
