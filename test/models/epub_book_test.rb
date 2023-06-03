@@ -39,15 +39,4 @@ class EpubBookTest < ActiveSupport::TestCase
     assert_equal 'Chapter 1', book.chapters[0].title
     assert_equal 'First paragraph', book.chapters[0].paragraphs[0].content
   end
-
-  test "#title_conditions" do
-    book = EpubBook.new({
-      title_tags: ["h1", "p.header", "p>PART ", "p.title>Chapter "]
-    })
-    t_cond = book.title_conditions
-    assert_equal({tag: "h1"}, t_cond[0])
-    assert_equal({tag: "p", class: "header"}, t_cond[1])
-    assert_equal({tag: "p", start: "PART "}, t_cond[2])
-    assert_equal({tag: "p", class: "title", start: "Chapter "}, t_cond[3])
-  end
 end

@@ -1,6 +1,5 @@
 class EpubBook < ApplicationRecord
   # TODO add parsing options validation
-  serialize :title_tags, Array
   serialize :title_xpaths, Array
   has_many :epub_items,
     -> { order('position') },
@@ -36,23 +35,6 @@ class EpubBook < ApplicationRecord
     end.compact
   end
 
-  def title_conditions
-    @title_conditions ||= title_tags.map do |tt|
-      tag, class_start = tt.split('.')
-      _, start = tt.split('>')
-      res = {tag: tag.split('>')[0]}
-      if start
-        res[:start] = start
-      end
-      if class_start
-        cl, _ = class_start.split('>')
-        res[:class] = cl
-      end
-      res
-    end
-    @title_conditions
-  end
-
   def matching_tag_position(tag)
     title_conditions.each_with_index do |tc, i|
       class_match = !tc[:class] || (
@@ -70,14 +52,6 @@ class EpubBook < ApplicationRecord
 
   def title
     "#{book.title} (#{language.name})"
-  end
-
-  def title_tags_text=(v)
-    self.title_tags = v.split(';')
-  end
-
-  def title_tags_text
-    title_tags.join(';')
   end
 
   def title_xpaths_text=(v)
