@@ -75,12 +75,14 @@ class ChapterZip < ApplicationRecord
       source_ps: source_ps_unmatched.map(&:content),
       target_ps: target_ps_unmatched.map(&:content)
     }
-    headers = {'Content-Type': 'application/json' }
-    response = JSON.parse(Net::HTTP.post(
-      URI(Rails.configuration.chapter_matcher_ms[:url]),
-      body.to_json,
-      headers
-    ).read_body)
+    headers = {'Content-Type': 'application/json'}
+    uri = URI(Rails.configuration.chapter_matcher_ms[:url])
+    http = Net::HTTP.new(uri.hostname, uri.port)
+    http.read_timeout = 240
+    http.use_ssl = false
+    response = JSON.parse(
+      http.request_post(uri.path, body.to_json, headers).read_body
+    )
     new_matches = response["connections"].map do |c|
       [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
     end
