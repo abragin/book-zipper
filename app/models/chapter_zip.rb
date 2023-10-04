@@ -80,13 +80,30 @@ class ChapterZip < ApplicationRecord
     http = Net::HTTP.new(uri.hostname, uri.port)
     http.read_timeout = 240
     http.use_ssl = false
-    response = JSON.parse(
-      http.request_post(uri.path, body.to_json, headers).read_body
-    )
+    begin
+      response = JSON.parse(
+        http.request_post(uri.path, body.to_json, headers).read_body
+      )
+    rescue Net::ReadTimeout
+      s_len = (source_ps_unmatched.size/2).to_i
+      t_len = (target_ps_unmatched.size/2).to_i
+      body = {
+        source_ps: source_ps_unmatched[..s_len].map(&:content),
+        target_ps: target_ps_unmatched[..t_len].map(&:content)
+      }
+      response = JSON.parse(
+        http.request_post(uri.path, body.to_json, headers).read_body
+      )
+
+    end
     new_matches = response["connections"].map do |c|
       [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
     end
-    unverified_connections = new_matches.map {|m| m[0]}
+    if (fic = response['first_inconsistent_connection']).present?
+      unverified_connections = new_matches[fic..].map {|m| m[0]}
+    else
+      unverified_connections = []
+    end
     return {
       new_matches: new_matches,
       unverified_connections: unverified_connections
