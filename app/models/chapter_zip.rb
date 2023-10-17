@@ -99,10 +99,8 @@ class ChapterZip < ApplicationRecord
     new_matches = response["connections"].map do |c|
       [source_ps_unmatched[c[0]].id, target_ps_unmatched[c[1]].id]
     end
-    if (fic = response['first_inconsistent_connection']).present?
-      unverified_connections = new_matches[fic..].map {|m| m[0]}
-    else
-      unverified_connections = []
+    unverified_connections = response['unverified_connections_source_id'].map do |si|
+      source_ps_unmatched[si].id
     end
     return {
       new_matches: new_matches,
