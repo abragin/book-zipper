@@ -6,7 +6,7 @@ class BookZip < ApplicationRecord
      dependent: :destroy
 
   def title
-    "#{ebook_source.book.title} (#{ebook_source.language.name} - #{ebook_target.language.name})"
+    "#{ebook_source.book.author.name} - #{ebook_source.book.title} (#{ebook_source.language.name} - #{ebook_target.language.name})"
   end
 
   def chapter_zips_with_extra_includes
