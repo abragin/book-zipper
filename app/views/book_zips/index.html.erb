@@ -1,12 +1,19 @@
 <h1>Book zips</h1>
-
-<ul>
-  <% @book_zips.each do |book_zip| %>
-    <li>
-      <%= link_to book_zip.title, book_zip_path(book_zip) %>
-      <%= link_to 'Destroy', book_zip, data: {
-        turbo_method: :delete,
-        turbo_confirm: "Are you sure?" } %>
-    </li>
-  <% end %>
-</ul>
+<%= form_with url: export_book_zips_path,
+  method: :post,
+  data: {turbo: false} do |form| %>
+  <ul class="book_zips">
+    <% @book_zips.each do |book_zip| %>
+      <li>
+        <%= check_box_tag 'book_zips_ids[]', book_zip.id, true %>
+        <%= link_to book_zip.title_with_author, book_zip_path(book_zip) %>
+        <%= link_to 'Destroy', book_zip, data: {
+          turbo_method: :delete,
+          turbo_confirm: "Are you sure?" } %>
+      </li>
+    <% end %>
+  </ul>
+  <div class="actions">
+    <%= form.submit "Export" %>
+  </div>
+<% end %>

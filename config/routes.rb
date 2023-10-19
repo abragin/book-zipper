@@ -10,7 +10,9 @@ Rails.application.routes.draw do
   root "epub_books#index"
 
   resources :book_zips, only: [:index, :show, :destroy] do
-    resources :chapter_zips, only: [:new, :create, :edit, :update, :destroy] do
+    post 'export', on: :collection
+    resources :chapter_zips, only:
+      [:new, :create, :edit, :update, :destroy] do
       member do
         get :change_paragraph_ranges
         post :update_ranges
